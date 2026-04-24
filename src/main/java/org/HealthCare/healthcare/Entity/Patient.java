@@ -1,10 +1,12 @@
 package org.HealthCare.healthcare.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "patient")
@@ -28,4 +30,12 @@ public class Patient {
 
     public Patient() {
     }
+
+    @OneToMany(mappedBy = "patient")
+    @JsonIgnore
+    private List<RendezVous> rendezVous;
+
+    @OneToOne(mappedBy = "patient" , cascade = CascadeType.ALL)
+    @JsonIgnore
+    private DossierMedical dossierMedical;
 }
