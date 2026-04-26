@@ -1,5 +1,6 @@
 package org.HealthCare.healthcare.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class RendezVous {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate dateRendezVous;
+    @Enumerated(EnumType.STRING)
     private StatutRendezVous statut;
 
     public RendezVous(LocalDate dateRendezVous, StatutRendezVous statut) {
@@ -25,4 +27,11 @@ public class RendezVous {
 
     public RendezVous() {
     }
+
+    @ManyToOne
+    @JsonIgnore
+    private Patient patient;
+    @ManyToOne
+    @JsonIgnore
+    private Medecin medecin;
 }

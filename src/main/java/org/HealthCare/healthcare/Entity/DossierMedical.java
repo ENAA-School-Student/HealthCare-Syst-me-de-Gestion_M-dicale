@@ -28,7 +28,8 @@ public class DossierMedical {
     public DossierMedical() {
     }
 
-    @OneToOne(mappedBy = "dossierMedical" , cascade = CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "patient_id")
     @JsonIgnore
-    private DossierMedical dossierMedical;
+    private Patient patient;
 }

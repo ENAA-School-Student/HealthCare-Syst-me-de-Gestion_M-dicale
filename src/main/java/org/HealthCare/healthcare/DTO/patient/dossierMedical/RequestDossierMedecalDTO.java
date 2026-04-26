@@ -1,6 +1,7 @@
 package org.HealthCare.healthcare.DTO.patient.dossierMedical;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,6 +12,6 @@ public class RequestDossierMedecalDTO {
     private String diagnostic;
     @NotBlank(message = "Le observation est obligatoire")
     private String observation;
-    @NotBlank(message = "Le date cration est obligatoire")
+    @NotNull(message = "Le date cration est obligatoire")
     private LocalDate dateCreation;
 }

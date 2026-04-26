@@ -2,6 +2,7 @@ package org.HealthCare.healthcare.DTO.patient.medecin;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -13,6 +14,6 @@ public class PutMedecinDTO {
     @NotBlank(message = "Le email est obligatoire")
     @Email(message = "L'email doit être valide")
     private String email;
-    @NotBlank(message = "Le telephone est obligatoire")
+    @NotNull(message = "Le telephone est obligatoire")
     private Long telephone;
 }

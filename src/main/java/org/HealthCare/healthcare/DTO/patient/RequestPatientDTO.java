@@ -1,6 +1,7 @@
 package org.HealthCare.healthcare.DTO.patient;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,8 +12,8 @@ public class RequestPatientDTO {
     private String nom;
     @NotBlank(message = "Le prenom est obligatoire")
     private String prenom;
-    @NotBlank(message = "Le telephone est obligatoire")
+    @NotNull(message = "Le telephone est obligatoire")
     private Long telephone;
-    @NotBlank(message = "Le date de naissance est obligatoire")
+    @NotNull(message = "Le date de naissance est obligatoire")
     private LocalDate dateNaissance;
 }
