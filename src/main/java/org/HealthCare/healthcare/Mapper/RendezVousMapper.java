@@ -1,4 +1,5 @@
 package org.HealthCare.healthcare.Mapper;
 
-public class RendezVousMapper {
+@Mapper(componentModel = "spring")
+public interface RendezVousMapper {
 }

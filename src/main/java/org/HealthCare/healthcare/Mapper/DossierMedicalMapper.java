@@ -1,4 +1,5 @@
 package org.HealthCare.healthcare.Mapper;
 
-public class DossierMedicalMapper {
+@Mapper(componentModel = "spring")
+public interface DossierMedicalMapper {
 }
