@@ -26,7 +26,7 @@ public class PatientService {
         return patientMapper.toResponseDTO(patient);
     }
 
-    public ResponsePatientDTO updatePatientm(Long id , PutPatientDTO dto){
+    public ResponsePatientDTO updatePatient(Long id , PutPatientDTO dto){
         Patient patientDejaExists = patientRepository.findById(id).
                 orElseThrow(()-> new RuntimeException("Patient introuvable"));
         patientMapper.updatePatient(dto , patientDejaExists);
@@ -38,7 +38,7 @@ public class PatientService {
         patientRepository.deleteById(id);
     }
 
-    public List<ResponsePatientDTO> getAllPatient(){
+    public List<ResponsePatientDTO> getAllPatients(){
         return patientRepository.findAll().stream().map(patientMapper::toResponseDTO)
                 .toList();
     }

@@ -7,6 +7,7 @@ import org.HealthCare.healthcare.Entity.Patient;
 import org.HealthCare.healthcare.Entity.RendezVous;
 import org.HealthCare.healthcare.Mapper.RendezVousMapper;
 import org.HealthCare.healthcare.Repository.RendezVousRepository;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,10 +36,10 @@ public class RendezVousService {
         return rendezVousMapper.toResponseDTO(rendezVous);
     }
 
-    public ResponseRendezVousDTO annulerRendezVous(Long id , PutRendezVousDTO dto){
+    public ResponseRendezVousDTO annulerRendezVous(Long id){
         RendezVous dejaExists = rendezVousRepository.findById(id).
                 orElseThrow(()-> new RuntimeException("Rendez Vous not found"));
-        dejaExists.setStatut(dto.getStatut());
+        dejaExists.setStatut(StatutRendezVous.ANNULE);
         RendezVous rendezVous = rendezVousRepository.save(dejaExists);
         return rendezVousMapper.toResponseDTO(rendezVous);
     }
