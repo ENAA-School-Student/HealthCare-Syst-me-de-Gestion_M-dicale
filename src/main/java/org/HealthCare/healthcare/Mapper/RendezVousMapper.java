@@ -8,6 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface RendezVousMapper {
     @Mapping(target = "id" , ignore = true)
@@ -15,6 +17,7 @@ public interface RendezVousMapper {
     @Mapping(target = "medecin" , ignore = true)
     RendezVous toEntity(RequestRendezVousDTO dto);
     ResponseRendezVousDTO toResponseDTO(RendezVous rendezVous);
+    List<ResponseRendezVousDTO> toResponseDTOList(List<RendezVous> rendezVous);
     @Mapping(target = "id" , ignore = true)
     @Mapping(target = "patient" , ignore = true)
     @Mapping(target = "medecin" , ignore = true)
