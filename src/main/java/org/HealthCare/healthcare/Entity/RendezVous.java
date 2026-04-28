@@ -9,7 +9,7 @@ import org.HealthCare.healthcare.enums.StatutRendezVous;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "rendezVous")
+@Table(name = "rendez_vous")
 @Getter
 @Setter
 public class RendezVous {
@@ -29,9 +29,12 @@ public class RendezVous {
     }
 
     @ManyToOne
+    @JoinColumn(name = "patient_id")
     @JsonIgnore
     private Patient patient;
+
     @ManyToOne
+    @JoinColumn(name = "medecin_id")
     @JsonIgnore
     private Medecin medecin;
 }

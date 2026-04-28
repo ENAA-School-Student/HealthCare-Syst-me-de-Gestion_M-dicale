@@ -11,5 +11,6 @@ public interface DossierMedicalMapper {
     @Mapping(target = "id" , ignore = true)
     @Mapping(target = "patient" , ignore = true)
     DossierMedical toEntity(RequestDossierMedecalDTO dto);
+    @Mapping(source = "patient.id" , target = "patientId")
     ResponseDossierMedicalDTO toResponse(DossierMedical dossierMedical);
 }

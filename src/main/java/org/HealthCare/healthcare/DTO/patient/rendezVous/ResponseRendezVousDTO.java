@@ -10,4 +10,6 @@ public class ResponseRendezVousDTO {
     private Long id;
     private LocalDate dateRendezVous;
     private StatutRendezVous statut;
+    private Long patientId;
+    private Long medecinId;
 }

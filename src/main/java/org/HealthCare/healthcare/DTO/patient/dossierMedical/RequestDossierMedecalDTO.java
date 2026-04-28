@@ -8,6 +8,8 @@ import java.time.LocalDate;
 
 @Data
 public class RequestDossierMedecalDTO {
+    @NotNull(message = "Le patient_id est obligatoire")
+    private Long patientId;
     @NotBlank(message = "Le diagnostic est obligatoire")
     private String diagnostic;
     @NotBlank(message = "Le observation est obligatoire")
