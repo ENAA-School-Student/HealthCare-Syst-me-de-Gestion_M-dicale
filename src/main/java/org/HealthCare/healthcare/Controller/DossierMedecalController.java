@@ -1,6 +1,8 @@
 package org.HealthCare.healthcare.Controller;
 
 import jakarta.validation.Valid;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.AddDiagnosticDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.AddObservationDTO;
 import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedecalDTO;
 import org.HealthCare.healthcare.DTO.patient.dossierMedical.ResponseDossierMedicalDTO;
 import org.HealthCare.healthcare.Service.DossierMedicalService;
@@ -24,12 +26,12 @@ public class DossierMedecalController {
     }
 
     @PutMapping("/{id}/diagnostic")
-    public ResponseEntity<ResponseDossierMedicalDTO> addDiagnostic(@PathVariable Long id , @Valid @RequestBody RequestDossierMedecalDTO dto){
+    public ResponseEntity<ResponseDossierMedicalDTO> addDiagnostic(@PathVariable Long id , @Valid @RequestBody AddDiagnosticDTO dto){
         return ResponseEntity.ok(dossierMedicalService.addDiagnostic(id , dto));
     }
 
     @PutMapping("/{id}/observation")
-    public ResponseEntity<ResponseDossierMedicalDTO> addObservation(@PathVariable Long id , @Valid @RequestBody RequestDossierMedecalDTO dto){
+    public ResponseEntity<ResponseDossierMedicalDTO> addObservation(@PathVariable Long id , @Valid @RequestBody AddObservationDTO dto){
         return ResponseEntity.ok(dossierMedicalService.addObservation(id, dto));
     }
 
