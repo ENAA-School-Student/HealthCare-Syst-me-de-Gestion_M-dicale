@@ -1,6 +1,5 @@
 package org.HealthCare.healthcare.Service;
 
-import org.HealthCare.healthcare.DTO.patient.PutPatientDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
 import org.HealthCare.healthcare.Entity.Medecin;
@@ -11,8 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.mockito.Mockito.when;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -30,15 +31,21 @@ class MedecinServiceTest {
     @Test
     void updateMedecin() {
         Long id = 1L;
-        String nom = "messi";
+        String Newnom = "messi";
         PutMedecinDTO putMedecinDTO = new PutMedecinDTO();
-        putMedecinDTO.setNom(nom);
+        putMedecinDTO.setNom(Newnom);
         Medecin medecin = new Medecin();
-        medecin.setNom(nom);
+        medecin.setId(id);
+        medecin.setNom("rida");
         ResponseMedecinDTO responseMedecinDTO = new ResponseMedecinDTO();
-        responseMedecinDTO.setNom(nom);
+        responseMedecinDTO.setNom(Newnom);
 
-        when(medecinRepository.findById(id)).thenReturn(medecin);
-        when(medecinMapper.toEntity(putMedecinDTO)).thenReturn();
+        when(medecinRepository.findById(id)).thenReturn(Optional.of(medecin));
+        when(medecinRepository.save(medecin)).thenReturn(medecin);
+        when(medecinMapper.toResponseDTO(medecin)).thenReturn(responseMedecinDTO);
+
+        ResponseMedecinDTO medecinDTO = medecinService.updateMedecin(id , putMedecinDTO);
+        assertNotNull(medecinDTO);
+        assertEquals(Newnom, medecinDTO.getNom());
     }
 }

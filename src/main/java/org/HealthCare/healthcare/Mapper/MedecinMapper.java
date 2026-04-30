@@ -13,6 +13,7 @@ public interface MedecinMapper {
     @Mapping(target = "id" , ignore = true)
     @Mapping(target = "rendezVous" , ignore = true)
     Medecin toEntity(RequestMedecinDTO dto);
+    Medecin toEntity(PutMedecinDTO dto);
     ResponseMedecinDTO toResponseDTO(Medecin medecin);
 
     @Mapping(target = "id" , ignore = true)
