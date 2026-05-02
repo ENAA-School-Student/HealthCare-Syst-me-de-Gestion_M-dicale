@@ -43,11 +43,11 @@ public class RendezVousController {
 
     @GetMapping("/patient/{nom}")
     public ResponseEntity<List<ResponseRendezVousDTO>> getRendezVousPatientByNom(@PathVariable String nom){
-        return ResponseEntity.ok(rendezVousService.findPatientByNom(nom));
+        return ResponseEntity.ok(rendezVousService.findRendezVousPatientByNom(nom));
     }
 
     @GetMapping("/medecin/{nom}")
     public ResponseEntity<List<ResponseRendezVousDTO>> getRendezVousMedecinByNom(@PathVariable String nom){
-        return ResponseEntity.ok(rendezVousService.findMedecinByNom(nom));
+        return ResponseEntity.ok(rendezVousService.findRendezVousMedecinByNom(nom));
     }
 }

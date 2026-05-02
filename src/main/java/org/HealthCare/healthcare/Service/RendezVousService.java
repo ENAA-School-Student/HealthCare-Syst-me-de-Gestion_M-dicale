@@ -61,12 +61,12 @@ public class RendezVousService {
         return rendezVousRepository.findAll().stream().map(rendezVousMapper::toResponseDTO).toList();
     }
 
-    public List<ResponseRendezVousDTO> findPatientByNom(String nom){
+    public List<ResponseRendezVousDTO> findRendezVousPatientByNom(String nom){
         List<RendezVous> rendezVous = rendezVousRepository.findByPatient_Nom(nom);
         return rendezVousMapper.toResponseDTOList(rendezVous);
     }
 
-    public List<ResponseRendezVousDTO> findMedecinByNom(String nom){
+    public List<ResponseRendezVousDTO> findRendezVousMedecinByNom(String nom){
         List<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Nom(nom);
         return rendezVousMapper.toResponseDTOList(rendezVous);
     }
