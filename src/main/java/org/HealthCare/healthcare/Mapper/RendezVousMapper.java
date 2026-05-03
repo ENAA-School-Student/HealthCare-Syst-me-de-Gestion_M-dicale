@@ -1,5 +1,7 @@
 package org.HealthCare.healthcare.Mapper;
 
+import org.HealthCare.healthcare.DTO.patient.medecin.CountRdvDeMedecin;
+import org.HealthCare.healthcare.DTO.patient.medecin.CountRdvDeMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
@@ -19,6 +21,7 @@ public interface RendezVousMapper {
     @Mapping(source = "patient.id" , target = "patientId")
     @Mapping(source = "medecin.id" , target = "medecinId")
     ResponseRendezVousDTO toResponseDTO(RendezVous rendezVous);
+    CountRdvDeMedecinDTO toResponseList(RendezVous rendezVous);
     List<ResponseRendezVousDTO> toResponseDTOList(List<RendezVous> rendezVous);
     @Mapping(target = "id" , ignore = true)
     @Mapping(target = "patient" , ignore = true)

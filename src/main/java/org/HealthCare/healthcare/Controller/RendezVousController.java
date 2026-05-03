@@ -5,10 +5,13 @@ import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
 import org.HealthCare.healthcare.Service.RendezVousService;
+import org.apache.coyote.Response;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -50,4 +53,11 @@ public class RendezVousController {
     public ResponseEntity<List<ResponseRendezVousDTO>> getRendezVousMedecinByNom(@PathVariable String nom){
         return ResponseEntity.ok(rendezVousService.findRendezVousMedecinByNom(nom));
     }
+
+    @GetMapping("/medecin")
+    public ResponseEntity<List<ResponseRendezVousDTO>> getRendezVousDeMedecin
+            (@RequestParam Long id , @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date){
+        return ResponseEntity.ok(rendezVousService.recuperDesRendezVousDeMedecinByDate(id , date));
+    }
+
 }
