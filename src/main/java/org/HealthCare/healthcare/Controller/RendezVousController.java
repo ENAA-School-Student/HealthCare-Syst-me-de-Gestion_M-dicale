@@ -4,11 +4,13 @@ import jakarta.validation.Valid;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
+import org.HealthCare.healthcare.Entity.RendezVous;
 import org.HealthCare.healthcare.Service.RendezVousService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,5 +51,20 @@ public class RendezVousController {
     @GetMapping("/medecin/{nom}")
     public ResponseEntity<List<ResponseRendezVousDTO>> getRendezVousMedecinByNom(@PathVariable String nom){
         return ResponseEntity.ok(rendezVousService.findRendezVousMedecinByNom(nom));
+    }
+
+    @GetMapping("/rendez_vous/medecin")
+    public ResponseEntity<List<ResponseRendezVousDTO>> afficherRdvMedecin(@RequestParam Long id , @RequestParam LocalDate date){
+        return ResponseEntity.ok(rendezVousService.afficherRendezVousMedecin(id , date));
+    }
+
+    @GetMapping("/rendez_vous/patient")
+    public ResponseEntity<List<ResponseRendezVousDTO>> afficherRdvPatient(@RequestParam Long id){
+        return ResponseEntity.ok(rendezVousService.afficherRdvPatient(id));
+    }
+
+    @GetMapping("/rendez_vous/totalRdv")
+    public ResponseEntity<Long> countRdv(){
+        return ResponseEntity.ok(rendezVousService.countRdv());
     }
 }

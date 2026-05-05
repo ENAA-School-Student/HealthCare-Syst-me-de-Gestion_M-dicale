@@ -1,5 +1,6 @@
 package org.HealthCare.healthcare.Service;
 
+import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
@@ -11,8 +12,10 @@ import org.HealthCare.healthcare.Repository.MedecinRepository;
 import org.HealthCare.healthcare.Repository.PatientRepository;
 import org.HealthCare.healthcare.Repository.RendezVousRepository;
 import org.HealthCare.healthcare.enums.StatutRendezVous;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -70,4 +73,18 @@ public class RendezVousService {
         List<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Nom(nom);
         return rendezVousMapper.toResponseDTOList(rendezVous);
     }
-}
+
+    public List<ResponseRendezVousDTO> afficherRendezVousMedecin(Long id , LocalDate date){
+        List<RendezVous> rendezVousList = rendezVousRepository.afficherMedecinRendezVous(id , date);
+        return rendezVousMapper.toResponseDTOList(rendezVousList);
+    }
+
+    public List<ResponseRendezVousDTO> afficherRdvPatient(Long id){
+        List<RendezVous> rendezVousList = rendezVousRepository.afficherRdvPatient(id);
+        return rendezVousMapper.toResponseDTOList(rendezVousList);
+    }
+
+    public Long countRdv(){
+        return rendezVousRepository.countRdv();
+    }
+ }
