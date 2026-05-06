@@ -1,10 +1,12 @@
 package org.HealthCare.healthcare.DTO.patient.dossierMedical;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 public class ResponseDossierMedicalDTO {
     private Long id;
     private String diagnostic;

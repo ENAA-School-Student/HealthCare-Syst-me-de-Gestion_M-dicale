@@ -1,10 +1,12 @@
 package org.HealthCare.healthcare.DTO.patient;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 public class ResponsePatientDTO {
     private Long id;
     private String nom;
