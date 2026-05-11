@@ -14,6 +14,7 @@ import org.HealthCare.healthcare.enums.StatutRendezVous;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Service
 public class RendezVousService {
@@ -69,5 +70,10 @@ public class RendezVousService {
     public List<ResponseRendezVousDTO> findRendezVousMedecinByNom(String nom){
         List<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Nom(nom);
         return rendezVousMapper.toResponseDTOList(rendezVous);
+    }
+
+    public List<ResponseRendezVousDTO> afficherRdvParStatut(StatutRendezVous statut){
+        return rendezVousRepository.findAll().stream().filter(r -> r.getStatut().equals(statut))
+                .map(rendezVousMapper::toResponseDTO).toList();
     }
 }
