@@ -40,6 +40,7 @@ public class AuthService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
 
         repo.save(user);
         log.info("User {} registered successfully", user.getEmail());
