@@ -24,6 +24,14 @@ public class User implements UserDetails {
     private RoleUser role;
     private String password;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Patient patient;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Medecin medecin;
+
     public User(String username, String email, String password) {
         this.username = username;
         this.email = email;

@@ -33,4 +33,8 @@ public class Medecin {
     @OneToMany(mappedBy = "medecin")
     @JsonIgnore
     private List<RendezVous> rendezVous;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
