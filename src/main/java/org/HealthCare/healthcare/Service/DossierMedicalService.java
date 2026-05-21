@@ -9,9 +9,12 @@ import org.HealthCare.healthcare.Entity.Patient;
 import org.HealthCare.healthcare.Mapper.DossierMedicalMapper;
 import org.HealthCare.healthcare.Repository.DossierMedicalRepository;
 import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class DossierMedicalService {
@@ -54,8 +57,13 @@ public class DossierMedicalService {
         return dossierMedicalMapper.toResponse(dossierMedical);
     }
 
-    private DossierMedical getDossierOrThrow(Long id){
+    public DossierMedical getDossierOrThrow(Long id){
         return dossierMedicalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dossier not found"));
+    }
+
+    public Page<ResponseDossierMedicalDTO> getAllDossierMedical(Pageable pageable){
+        Page<DossierMedical> page = dossierMedicalRepository.findAll(pageable);
+        return page.map(dossierMedicalMapper::toResponse);
     }
 }

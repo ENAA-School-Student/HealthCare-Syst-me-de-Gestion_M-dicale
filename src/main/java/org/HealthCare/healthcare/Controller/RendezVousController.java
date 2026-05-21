@@ -5,6 +5,8 @@ import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
 import org.HealthCare.healthcare.Service.RendezVousService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,8 +44,8 @@ public class RendezVousController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ResponseRendezVousDTO>> getAllRendezVous(){
-        return ResponseEntity.ok(rendezVousService.getAllRendezVous());
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getAllRendezVous(Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.getAllRendezVous(pageable));
     }
 
     @GetMapping("/patient/{nom}")

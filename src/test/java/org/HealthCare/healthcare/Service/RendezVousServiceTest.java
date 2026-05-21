@@ -11,6 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +64,8 @@ class RendezVousServiceTest {
         RendezVous rendezVous1 = new RendezVous();
 
         List<RendezVous> rendezVousList = List.of(rendezVous , rendezVous1);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<RendezVous> page = new PageImpl<>(rendezVousList, pageable, rendezVousList.size());
 
         ResponseRendezVousDTO responseRendezVousDTO = new ResponseRendezVousDTO();
         responseRendezVousDTO.setId(1L);
@@ -67,14 +73,14 @@ class RendezVousServiceTest {
         ResponseRendezVousDTO responseRendezVousDTO1 = new ResponseRendezVousDTO();
         responseRendezVousDTO1.setId(1L);
 
-        when(rendezVousRepository.findAll()).thenReturn(rendezVousList);
+        when(rendezVousRepository.findAll(pageable)).thenReturn(page);
         when(rendezVousMapper.toResponseDTO(rendezVous)).thenReturn(responseRendezVousDTO);
         when(rendezVousMapper.toResponseDTO(rendezVous1)).thenReturn(responseRendezVousDTO1);
 
-        List<ResponseRendezVousDTO> rendezVousDTO = rendezVousService.getAllRendezVous();
+        Page<ResponseRendezVousDTO> rendezVousDTO = rendezVousService.getAllRendezVous(pageable);
 
         assertNotNull(rendezVousDTO);
-        assertEquals(2 , rendezVousDTO.size());
+        assertEquals(2 , rendezVousDTO.getContent().size());
     }
 
     @Test
@@ -99,6 +105,6 @@ class RendezVousServiceTest {
 
         assertNotNull(responseRendezVousDTOS);
         assertEquals(1 , responseRendezVousDTOS.size());
-        assertEquals(1 , responseRendezVousDTOS.get(0).getPatientId());
+        assertEquals(1L , responseRendezVousDTOS.get(0).getPatientId());
     }
 }

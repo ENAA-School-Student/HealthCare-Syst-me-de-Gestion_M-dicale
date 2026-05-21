@@ -5,6 +5,8 @@ import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.RequestMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
 import org.HealthCare.healthcare.Service.MedecinService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,8 +45,8 @@ public class MedecinController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ResponseMedecinDTO>> getAllMedecin(){
-        return ResponseEntity.ok(medecinService.getAllMedecin());
+    public ResponseEntity<Page<ResponseMedecinDTO>> getAllMedecin(Pageable pageable){
+        return ResponseEntity.ok(medecinService.getAllMedecin(pageable));
     }
 
 }

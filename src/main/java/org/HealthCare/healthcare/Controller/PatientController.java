@@ -5,6 +5,8 @@ import org.HealthCare.healthcare.DTO.patient.PutPatientDTO;
 import org.HealthCare.healthcare.DTO.patient.RequestPatientDTO;
 import org.HealthCare.healthcare.DTO.patient.ResponsePatientDTO;
 import org.HealthCare.healthcare.Service.PatientService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,8 +45,8 @@ public class PatientController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<List<ResponsePatientDTO>> getAllPatients(){
-        return ResponseEntity.ok(patientService.getAllPatients());
+    public ResponseEntity<Page<ResponsePatientDTO>> getAllPatients(Pageable pageable){
+        return ResponseEntity.ok(patientService.getAllPatients(pageable));
     }
 
     @GetMapping("/{id}")

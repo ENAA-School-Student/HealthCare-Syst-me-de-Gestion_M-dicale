@@ -6,8 +6,10 @@ import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
 import org.HealthCare.healthcare.Entity.Medecin;
 import org.HealthCare.healthcare.Mapper.MedecinMapper;
 import org.HealthCare.healthcare.Repository.MedecinRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -38,8 +40,9 @@ public class MedecinService {
         medecinRepository.deleteById(id);
     }
 
-    public List<ResponseMedecinDTO> getAllMedecin(){
-        return medecinRepository.findAll().stream().map(medecinMapper::toResponseDTO).
-                toList();
+    public Page<ResponseMedecinDTO> getAllMedecin(Pageable pageable){
+        Page<Medecin> page = medecinRepository.findAll(pageable);
+                return page.map(medecinMapper::toResponseDTO);
+
     }
 }

@@ -11,6 +11,8 @@ import org.HealthCare.healthcare.Repository.MedecinRepository;
 import org.HealthCare.healthcare.Repository.PatientRepository;
 import org.HealthCare.healthcare.Repository.RendezVousRepository;
 import org.HealthCare.healthcare.enums.StatutRendezVous;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,8 +59,9 @@ public class RendezVousService {
         return rendezVousMapper.toResponseDTO(rendezVous);
     }
 
-    public List<ResponseRendezVousDTO> getAllRendezVous(){
-        return rendezVousRepository.findAll().stream().map(rendezVousMapper::toResponseDTO).toList();
+    public Page<ResponseRendezVousDTO> getAllRendezVous(Pageable pageable){
+        Page<RendezVous> page = rendezVousRepository.findAll(pageable);
+        return page.map(rendezVousMapper::toResponseDTO);
     }
 
     public List<ResponseRendezVousDTO> findRendezVousPatientByNom(String nom){
