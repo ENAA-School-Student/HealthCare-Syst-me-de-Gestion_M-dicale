@@ -1,8 +1,10 @@
 package org.HealthCare.healthcare.DTO.patient.medecin;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ResponseMedecinDTO {
     private Long id;
     private String nom;

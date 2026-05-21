@@ -2,12 +2,14 @@ package org.HealthCare.healthcare.DTO.patient.dossierMedical;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Data
-public class RequestDossierMedecalDTO {
+@Getter
+@Setter
+public class RequestDossierMedicalDTO {
     @NotNull(message = "Le patient_id est obligatoire")
     private Long patientId;
     @NotBlank(message = "Le diagnostic est obligatoire")

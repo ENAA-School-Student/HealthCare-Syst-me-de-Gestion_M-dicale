@@ -1,6 +1,5 @@
 package org.HealthCare.healthcare.Service;
 
-import org.HealthCare.healthcare.DTO.patient.medecin.CountRdvDeMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
@@ -14,7 +13,6 @@ import org.HealthCare.healthcare.Repository.RendezVousRepository;
 import org.HealthCare.healthcare.enums.StatutRendezVous;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -73,12 +71,8 @@ public class RendezVousService {
         return rendezVousMapper.toResponseDTOList(rendezVous);
     }
 
-    public List<ResponseRendezVousDTO> recuperDesRendezVousDeMedecinByDate(Long id , LocalDate date){
-        List<RendezVous> rendezVousList = rendezVousRepository.recuperDesRendezVousDeMedecinByDate(id , date);
-        return rendezVousMapper.toResponseDTOList(rendezVousList);
-    }
-
-    public List<CountRdvDeMedecinDTO> gettotalMedecinRdv(Long id){
-        return rendezVousRepository.calculerLesRendezVousDeMedecin();
+    public List<ResponseRendezVousDTO> afficherRdvParStatut(StatutRendezVous statut){
+        return rendezVousRepository.findAll().stream().filter(r -> r.getStatut().equals(statut))
+                .map(rendezVousMapper::toResponseDTO).toList();
     }
 }

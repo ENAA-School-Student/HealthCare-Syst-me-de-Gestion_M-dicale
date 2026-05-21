@@ -3,9 +3,11 @@ package org.HealthCare.healthcare.DTO.patient.medecin;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class RequestMedecinDTO {
     @NotBlank(message = "Le nom est obligatoire")
     private String nom;

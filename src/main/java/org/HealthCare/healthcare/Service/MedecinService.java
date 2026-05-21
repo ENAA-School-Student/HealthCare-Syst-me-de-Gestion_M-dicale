@@ -1,6 +1,5 @@
 package org.HealthCare.healthcare.Service;
 
-import org.HealthCare.healthcare.DTO.patient.ResponsePatientDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.RequestMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;

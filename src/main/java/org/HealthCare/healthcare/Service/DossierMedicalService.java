@@ -2,13 +2,15 @@ package org.HealthCare.healthcare.Service;
 
 import org.HealthCare.healthcare.DTO.patient.dossierMedical.AddDiagnosticDTO;
 import org.HealthCare.healthcare.DTO.patient.dossierMedical.AddObservationDTO;
-import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedecalDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedicalDTO;
 import org.HealthCare.healthcare.DTO.patient.dossierMedical.ResponseDossierMedicalDTO;
 import org.HealthCare.healthcare.Entity.DossierMedical;
 import org.HealthCare.healthcare.Entity.Patient;
 import org.HealthCare.healthcare.Mapper.DossierMedicalMapper;
 import org.HealthCare.healthcare.Repository.DossierMedicalRepository;
 import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,7 +27,7 @@ public class DossierMedicalService {
         this.patientRepository = patientRepository;
     }
 
-    public ResponseDossierMedicalDTO createDossierMedical(RequestDossierMedecalDTO dto){
+    public ResponseDossierMedicalDTO createDossierMedical(RequestDossierMedicalDTO dto){
         Patient patient = patientRepository.findById(dto.getPatientId())
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
         DossierMedical dossierMedicalMapperEntity = dossierMedicalMapper.toEntity(dto);
@@ -54,8 +56,13 @@ public class DossierMedicalService {
         return dossierMedicalMapper.toResponse(dossierMedical);
     }
 
-    private DossierMedical getDossierOrThrow(Long id){
+    public DossierMedical getDossierOrThrow(Long id){
         return dossierMedicalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dossier not found"));
+    }
+
+    public Page<ResponseDossierMedicalDTO> getAllDossierMedical(Pageable pageable){
+        Page<DossierMedical> page = dossierMedicalRepository.findAll(pageable);
+        return page.map(dossierMedicalMapper::toResponse);
     }
 }
