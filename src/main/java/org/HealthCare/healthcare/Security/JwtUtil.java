@@ -1,11 +1,14 @@
 package org.HealthCare.healthcare.Security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import org.HealthCare.healthcare.Entity.User;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
