@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class RequestDossierMedecalDTO {
+public class RequestDossierMedicalDTO {
     @NotNull(message = "Le patient_id est obligatoire")
     private Long patientId;
     @NotBlank(message = "Le diagnostic est obligatoire")

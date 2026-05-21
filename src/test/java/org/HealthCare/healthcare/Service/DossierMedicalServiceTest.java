@@ -1,6 +1,6 @@
 package org.HealthCare.healthcare.Service;
 
-import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedecalDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedicalDTO;
 import org.HealthCare.healthcare.DTO.patient.dossierMedical.ResponseDossierMedicalDTO;
 import org.HealthCare.healthcare.Entity.DossierMedical;
 import org.HealthCare.healthcare.Entity.Patient;
@@ -36,27 +36,26 @@ class DossierMedicalServiceTest {
     @Test
     void createDossierMedical() {
         String observation = "test";
-        RequestDossierMedecalDTO dossierMedecalDTO = new RequestDossierMedecalDTO();
-        dossierMedecalDTO.setObservation(observation);
-        dossierMedecalDTO.setPatientId(1L);
+        RequestDossierMedicalDTO dossierMedicalDTO = new RequestDossierMedicalDTO();
+        dossierMedicalDTO.setObservation(observation);
+        dossierMedicalDTO.setPatientId(1L);
 
         Patient patient = new Patient();
         patient.setId(1L);
 
         DossierMedical dossierMedical = new DossierMedical();
         dossierMedical.setObservation(observation);
-        dossierMedecalDTO.setPatientId(1L);
 
         ResponseDossierMedicalDTO responseDossierMedicalDTO = new ResponseDossierMedicalDTO();
         responseDossierMedicalDTO.setObservation(observation);
 
         when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
-        when(dossierMedicalMapper.toEntity(dossierMedecalDTO)).thenReturn(dossierMedical);
+        when(dossierMedicalMapper.toEntity(dossierMedicalDTO)).thenReturn(dossierMedical);
         when(dossierMedicalRepository.save(dossierMedical)).thenReturn(dossierMedical);
         when(dossierMedicalMapper.toResponse(dossierMedical)).thenReturn(responseDossierMedicalDTO);
 
-        ResponseDossierMedicalDTO responseDossierMedicalDTO1 = dossierMedicalService.createDossierMedical(dossierMedecalDTO);
-        assertNotNull(dossierMedecalDTO);
+        ResponseDossierMedicalDTO responseDossierMedicalDTO1 = dossierMedicalService.createDossierMedical(dossierMedicalDTO);
+        assertNotNull(responseDossierMedicalDTO1);
         assertEquals(observation , responseDossierMedicalDTO1.getObservation());
     }
 
@@ -74,7 +73,7 @@ class DossierMedicalServiceTest {
 
         ResponseDossierMedicalDTO responseDossierMedicalDTO1 = dossierMedicalService.getDossierById(dossier_id);
 
-        assertNotNull(dossier_id);
+        assertNotNull(responseDossierMedicalDTO1);
         assertEquals(dossier_id , responseDossierMedicalDTO1.getId());
     }
 }
