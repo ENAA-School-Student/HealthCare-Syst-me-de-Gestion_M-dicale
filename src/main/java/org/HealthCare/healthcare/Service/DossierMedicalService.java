@@ -10,10 +10,11 @@ import org.HealthCare.healthcare.Mapper.DossierMedicalMapper;
 import org.HealthCare.healthcare.Repository.DossierMedicalRepository;
 import org.HealthCare.healthcare.Repository.PatientRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class DossierMedicalService {

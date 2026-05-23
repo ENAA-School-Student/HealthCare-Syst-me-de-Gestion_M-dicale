@@ -23,27 +23,32 @@ public class DossierMedicalController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('MEDECIN')")
     public ResponseEntity<ResponseDossierMedicalDTO> createDossierMedical(@Valid @RequestBody RequestDossierMedicalDTO dto){
         ResponseDossierMedicalDTO responseDossierMedicalDTO = dossierMedicalService.createDossierMedical(dto);
         return new ResponseEntity<>(responseDossierMedicalDTO , HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/diagnostic")
+    @PreAuthorize("hasRole('MEDECIN')")
     public ResponseEntity<ResponseDossierMedicalDTO> addDiagnostic(@PathVariable Long id , @Valid @RequestBody AddDiagnosticDTO dto){
         return ResponseEntity.ok(dossierMedicalService.addDiagnostic(id , dto));
     }
 
     @PutMapping("/{id}/observation")
+    @PreAuthorize("hasRole('MEDECIN')")
     public ResponseEntity<ResponseDossierMedicalDTO> addObservation(@PathVariable Long id , @Valid @RequestBody AddObservationDTO dto){
         return ResponseEntity.ok(dossierMedicalService.addObservation(id, dto));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('MEDECIN')")
     public ResponseEntity<ResponseDossierMedicalDTO> getDossierMedicalById(@PathVariable Long id){
         return ResponseEntity.ok(dossierMedicalService.getDossierById(id));
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ResponseDossierMedicalDTO>> getAllDossierMedical(Pageable pageable){
         return ResponseEntity.ok(dossierMedicalService.getAllDossierMedical(pageable));
     }
