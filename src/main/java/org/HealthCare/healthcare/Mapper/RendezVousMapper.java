@@ -1,6 +1,5 @@
 package org.HealthCare.healthcare.Mapper;
 
-import org.HealthCare.healthcare.DTO.patient.medecin.CountRdvDeMedecin;
 import org.HealthCare.healthcare.DTO.patient.medecin.CountRdvDeMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
