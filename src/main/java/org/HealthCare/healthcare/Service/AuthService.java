@@ -28,7 +28,6 @@ public class AuthService {
     }
 
     public AuthResponse register(RegistreRequest request) {
-        log.info("Attempting to register user: {}", request.getEmail());
         User existing = repo.findByEmail(request.getEmail());
 
         if (existing != null) {
@@ -43,7 +42,6 @@ public class AuthService {
         user.setRole(request.getRole());
 
         repo.save(user);
-        log.info("User {} registered successfully", user.getEmail());
 
         String token = jwtUtil.genereteToken(user.getEmail());
 
@@ -51,13 +49,11 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        log.info("Attempting login for email: {}", request.getEmail());
         try {
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 
             authenticationManager.authenticate(authToken);
-            log.info("Authentication successful for: {}", request.getEmail());
 
             String token = jwtUtil.genereteToken(request.getEmail());
             return new AuthResponse(token);
