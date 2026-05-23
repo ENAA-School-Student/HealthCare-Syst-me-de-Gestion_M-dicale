@@ -64,18 +64,23 @@ public class RendezVousService {
         return page.map(rendezVousMapper::toResponseDTO);
     }
 
-    public List<ResponseRendezVousDTO> findRendezVousPatientByNom(String nom){
-        List<RendezVous> rendezVous = rendezVousRepository.findByPatient_Nom(nom);
-        return rendezVousMapper.toResponseDTOList(rendezVous);
+    public Page<ResponseRendezVousDTO> findRendezVousPatientByNom(String nom, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByPatient_Nom(nom, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
 
-    public List<ResponseRendezVousDTO> findRendezVousMedecinByNom(String nom){
-        List<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Nom(nom);
-        return rendezVousMapper.toResponseDTOList(rendezVous);
+    public Page<ResponseRendezVousDTO> findRendezVousMedecinByNom(String nom, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Nom(nom, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
 
-    public List<ResponseRendezVousDTO> afficherRdvParStatut(StatutRendezVous statut){
-        return rendezVousRepository.findAll().stream().filter(r -> r.getStatut().equals(statut))
-                .map(rendezVousMapper::toResponseDTO).toList();
+    public Page<ResponseRendezVousDTO> recuperDesRendezVousDeMedecinByDate(Long id, java.time.LocalDate date, Pageable pageable) {
+        Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_IdAndDateRendezVous(id, date, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
+
+    public Page<ResponseRendezVousDTO> afficherRdvParStatut(StatutRendezVous statut, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByStatut(statut, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
 }

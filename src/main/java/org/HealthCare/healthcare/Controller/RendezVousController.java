@@ -5,8 +5,10 @@ import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
 import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
 import org.HealthCare.healthcare.Service.RendezVousService;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,26 +48,32 @@ public class RendezVousController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<ResponseRendezVousDTO>> getAllRendezVous(Pageable pageable){
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getAllRendezVous(@PageableDefault(sort = "dateRendezVous") Pageable pageable){
         return ResponseEntity.ok(rendezVousService.getAllRendezVous(pageable));
     }
 
     @GetMapping("/patient/{nom}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ResponseRendezVousDTO>> getRendezVousPatientByNom(@PathVariable String nom){
-        return ResponseEntity.ok(rendezVousService.findRendezVousPatientByNom(nom));
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousPatientByNom(@PathVariable String nom, Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.findRendezVousPatientByNom(nom, pageable));
     }
 
     @GetMapping("/medecin/{nom}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ResponseRendezVousDTO>> getRendezVousMedecinByNom(@PathVariable String nom){
-        return ResponseEntity.ok(rendezVousService.findRendezVousMedecinByNom(nom));
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousMedecinByNom(@PathVariable String nom, Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.findRendezVousMedecinByNom(nom, pageable));
     }
 
     @GetMapping("/medecin")
-    public ResponseEntity<List<ResponseRendezVousDTO>> getRendezVousDeMedecin
-            (@RequestParam Long id , @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date){
-        return ResponseEntity.ok(rendezVousService.recuperDesRendezVousDeMedecinByDate(id , date));
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousDeMedecin
+            (@RequestParam Long id , @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date, Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.recuperDesRendezVousDeMedecinByDate(id , date, pageable));
+    }
+
+    @GetMapping("/statut/{statut}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousByStatut(@PathVariable StatutRendezVous statut, @PageableDefault(sort = "dateRendezVous") Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.afficherRdvParStatut(statut, pageable));
     }
 
 }
