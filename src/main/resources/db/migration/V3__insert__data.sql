@@ -1,4 +1,3 @@
--- Insertion de base pour les patients (SANS user_id car la colonne n'existe pas encore à ce stade)
 INSERT INTO patient (nom, prenom, telephone, date_naissance) VALUES
     ('Rida', 'Taki', 600000001, '2000-01-01'),
     ('Ali', 'Hassan', 600000002, '1998-05-10'),
@@ -13,7 +12,6 @@ INSERT INTO patient (nom, prenom, telephone, date_naissance) VALUES
     ('Moussaoui', 'Hamza', 600000013, '1982-04-10'),
     ('Tazi', 'Nadia', 600000014, '1999-10-22');
 
--- Insertion de base pour les médecins
 INSERT INTO medecin (nom, specialite, email, telephone) VALUES
     ('Dr Karim', 'Cardiologie', 'karim@test.com', 600000003),
     ('Dr Sara', 'Dermatologie', 'sara@test.com', 600000004),
@@ -22,7 +20,6 @@ INSERT INTO medecin (nom, specialite, email, telephone) VALUES
     ('Dr Amina', 'Gynecologie', 'amina@gmail.com', 600000017),
     ('Dr Youssef', 'Cardiologie', 'youssef@gmail.com', 600000018);
 
--- Insertion des dossiers médicaux
 INSERT INTO dossier_medical (diagnostic, observation, date_creation, patient_id) VALUES
     ('Diabete', 'Suivi régulier', CURDATE(), 1),
     ('Allergie', 'Eviter pollen', CURDATE(), 2),
@@ -30,7 +27,6 @@ INSERT INTO dossier_medical (diagnostic, observation, date_creation, patient_id)
     ('Anémie', 'Compléments fer', CURDATE(), 4),
     ('Asthme', 'Inhalateur si besoin', CURDATE(), 5);
 
--- Insertion des rendez-vous
 INSERT INTO rendez_vous (date_rendez_vous, statut, patient_id, medecin_id) VALUES
     (CURDATE(), 'EN_ATTENTE', 1, 1),
     (CURDATE(), 'CONFIRME', 2, 2),
