@@ -83,4 +83,14 @@ public class RendezVousService {
         Page<RendezVous> rendezVous = rendezVousRepository.findByStatut(statut, pageable);
         return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
+
+    public Page<ResponseRendezVousDTO> findRendezVousPatientById(Long id, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByPatient_Id(id, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
+
+    public Page<ResponseRendezVousDTO> findRendezVousMedecinById(Long id, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Id(id, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
 }

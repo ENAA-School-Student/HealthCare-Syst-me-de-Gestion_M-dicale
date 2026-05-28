@@ -40,6 +40,12 @@ public class MedecinService {
         medecinRepository.deleteById(id);
     }
 
+    public ResponseMedecinDTO getMedecinById(Long id) {
+        Medecin medecin = medecinRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Medecin introuvable"));
+        return medecinMapper.toResponseDTO(medecin);
+    }
+
     public Page<ResponseMedecinDTO> getAllMedecin(Pageable pageable){
         Page<Medecin> page = medecinRepository.findAll(pageable);
                 return page.map(medecinMapper::toResponseDTO);

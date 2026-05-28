@@ -11,4 +11,5 @@ public class ResponseMedecinDTO {
     private String specialite;
     private String email;
     private Long telephone;
+    private Long userId;
 }

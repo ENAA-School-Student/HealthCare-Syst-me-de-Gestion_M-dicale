@@ -91,20 +91,20 @@ class RendezVousServiceTest {
         patient.setNom(nom);
         rendezVous.setPatient(patient);
 
+        Pageable pageable = PageRequest.of(0, 10);
         List<RendezVous> list = List.of(rendezVous);
+        Page<RendezVous> page = new PageImpl<>(list, pageable, list.size());
 
         ResponseRendezVousDTO responseRendezVousDTO = new ResponseRendezVousDTO();
         responseRendezVousDTO.setPatientId(1L);
 
-        List<ResponseRendezVousDTO> rendezVousDTOList = List.of(responseRendezVousDTO);
+        when(rendezVousRepository.findByPatient_Nom(nom, pageable)).thenReturn(page);
+        when(rendezVousMapper.toResponseDTO(rendezVous)).thenReturn(responseRendezVousDTO);
 
-        when(rendezVousRepository.findByPatient_Nom(nom)).thenReturn(list);
-        when(rendezVousMapper.toResponseDTOList(list)).thenReturn(rendezVousDTOList);
-
-        List<ResponseRendezVousDTO> responseRendezVousDTOS = rendezVousService.findRendezVousPatientByNom(nom);
+        Page<ResponseRendezVousDTO> responseRendezVousDTOS = rendezVousService.findRendezVousPatientByNom(nom, pageable);
 
         assertNotNull(responseRendezVousDTOS);
-        assertEquals(1 , responseRendezVousDTOS.size());
-        assertEquals(1L , responseRendezVousDTOS.get(0).getPatientId());
+        assertEquals(1 , responseRendezVousDTOS.getContent().size());
+        assertEquals(1L , responseRendezVousDTOS.getContent().get(0).getPatientId());
     }
 }

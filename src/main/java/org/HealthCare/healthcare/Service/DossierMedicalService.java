@@ -66,4 +66,10 @@ public class DossierMedicalService {
         Page<DossierMedical> page = dossierMedicalRepository.findAll(pageable);
         return page.map(dossierMedicalMapper::toResponse);
     }
+
+    public ResponseDossierMedicalDTO getDossierByPatientId(Long patientId) {
+        DossierMedical dossier = dossierMedicalRepository.findByPatient_Id(patientId)
+                .orElseThrow(() -> new RuntimeException("Dossier medical introuvable"));
+        return dossierMedicalMapper.toResponse(dossier);
+    }
 }

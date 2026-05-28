@@ -32,7 +32,7 @@ public class MedecinController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN' , 'MEDECIN')")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MEDECIN') and principal.id == @medecinService.getMedecinById(#id).userId)")
     public ResponseEntity<ResponseMedecinDTO> updateMedecin(@PathVariable Long id , @Valid @RequestBody PutMedecinDTO dto){
         return ResponseEntity.ok(medecinService.updateMedecin(id , dto));
     }
@@ -42,6 +42,12 @@ public class MedecinController {
     public ResponseEntity<Void> deleteMedecin(@PathVariable Long id){
         medecinService.deleteMedecin(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MEDECIN') and principal.id == @medecinService.getMedecinById(#id).userId)")
+    public ResponseEntity<ResponseMedecinDTO> getMedecinById(@PathVariable Long id){
+        return ResponseEntity.ok(medecinService.getMedecinById(id));
     }
 
     @GetMapping

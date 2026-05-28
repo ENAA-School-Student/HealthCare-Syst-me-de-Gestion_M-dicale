@@ -24,9 +24,10 @@ public class JwtUtil {
     private int jwtExpiration;
 
 
-    public String genereteToken(String email){
+    public String genereteToken(String email, String role){
         return Jwts.builder()
                 .setSubject(email)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
                 .signWith(SignatureAlgorithm.HS256 , jwtSecret)

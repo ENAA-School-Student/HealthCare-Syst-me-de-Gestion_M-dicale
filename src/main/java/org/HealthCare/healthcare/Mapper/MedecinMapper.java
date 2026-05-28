@@ -14,6 +14,7 @@ public interface MedecinMapper {
     @Mapping(target = "rendezVous" , ignore = true)
     Medecin toEntity(RequestMedecinDTO dto);
     Medecin toEntity(PutMedecinDTO dto);
+    @Mapping(target = "userId", source = "user.id")
     ResponseMedecinDTO toResponseDTO(Medecin medecin);
 
     @Mapping(target = "id" , ignore = true)
