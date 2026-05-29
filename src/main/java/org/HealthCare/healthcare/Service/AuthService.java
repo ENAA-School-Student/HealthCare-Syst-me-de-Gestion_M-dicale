@@ -50,24 +50,23 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
-        User savedUser = repo.save(user);
-
-        // Créer l'entité Patient ou Medecin correspondante
+        // Créer l'entité Patient ou Medecin correspondante et lier bidirectionnellement
         if (request.getRole() == RoleUser.PATIENT) {
             Patient patient = new Patient();
-            patient.setNom(user.getUsername()); // On met le username comme nom par défaut
-            patient.setUser(savedUser);
-            patientRepository.save(patient);
+            patient.setNom(user.getUsername());
+            patient.setUser(user);
+            user.setPatient(patient);
         } else if (request.getRole() == RoleUser.MEDECIN) {
             Medecin medecin = new Medecin();
             medecin.setNom(user.getUsername());
             medecin.setEmail(user.getEmail());
-            medecin.setUser(savedUser);
-            medecinRepository.save(medecin);
+            medecin.setUser(user);
+            user.setMedecin(medecin);
         }
 
-        String token = jwtUtil.genereteToken(user.getEmail(), user.getRole().name());
+        repo.save(user);
 
+        String token = jwtUtil.genereteToken(user.getEmail(), user.getRole().name());
         return new AuthResponse(token);
     }
 
