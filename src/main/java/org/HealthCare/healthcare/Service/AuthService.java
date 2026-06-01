@@ -50,7 +50,6 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
-        // Créer l'entité Patient ou Medecin correspondante et lier bidirectionnellement
         if (request.getRole() == RoleUser.PATIENT) {
             Patient patient = new Patient();
             patient.setNom(user.getUsername());
