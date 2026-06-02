@@ -62,4 +62,10 @@ public class MedecinController {
         return ResponseEntity.ok(medecinService.searchMedecinBySpecialite(specialite, pageable));
     }
 
+    @GetMapping("/telephone")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseMedecinDTO>> getMedecinByTele(@RequestParam Long tele, Pageable pageable){
+        return ResponseEntity.ok(medecinService.getPatientByTele(tele , pageable));
+    }
+
 }
