@@ -46,7 +46,7 @@ public class PatientController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<ResponsePatientDTO>> getAllPatients(@PageableDefault(sort = "nom") Pageable pageable){
+    public ResponseEntity<Page<ResponsePatientDTO>> getAllPatients(Pageable pageable){
         return ResponseEntity.ok(patientService.getAllPatients(pageable));
     }
 

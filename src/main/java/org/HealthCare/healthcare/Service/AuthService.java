@@ -7,8 +7,6 @@ import org.HealthCare.healthcare.DTO.patient.auth.RegistreRequest;
 import org.HealthCare.healthcare.Entity.Medecin;
 import org.HealthCare.healthcare.Entity.Patient;
 import org.HealthCare.healthcare.Entity.User;
-import org.HealthCare.healthcare.Repository.MedecinRepository;
-import org.HealthCare.healthcare.Repository.PatientRepository;
 import org.HealthCare.healthcare.Repository.UserRepository;
 import org.HealthCare.healthcare.Security.JwtUtil;
 import org.HealthCare.healthcare.enums.RoleUser;
@@ -21,16 +19,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService {
     private final UserRepository repo;
-    private final PatientRepository patientRepository;
-    private final MedecinRepository medecinRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public AuthService(UserRepository repo, PatientRepository patientRepository, MedecinRepository medecinRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
         this.repo = repo;
-        this.patientRepository = patientRepository;
-        this.medecinRepository = medecinRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;

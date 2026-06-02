@@ -51,7 +51,7 @@ public class RendezVousController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<ResponseRendezVousDTO>> getAllRendezVous(@PageableDefault(sort = "dateRendezVous") Pageable pageable){
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getAllRendezVous(Pageable pageable){
         return ResponseEntity.ok(rendezVousService.getAllRendezVous(pageable));
     }
 

@@ -52,7 +52,7 @@ public class MedecinController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<ResponseMedecinDTO>> getAllMedecin(@PageableDefault(sort = "specialite") Pageable pageable){
+    public ResponseEntity<Page<ResponseMedecinDTO>> getAllMedecin(Pageable pageable){
         return ResponseEntity.ok(medecinService.getAllMedecin(pageable));
     }
 
