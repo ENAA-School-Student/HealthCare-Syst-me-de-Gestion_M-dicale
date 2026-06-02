@@ -41,16 +41,7 @@ public class SecurityConfig {
                 );
 
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
-        http.authenticationProvider(authenticationProvider());
         return http.build();
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
     }
 
     @Bean
