@@ -11,6 +11,8 @@ import org.HealthCare.healthcare.Repository.MedecinRepository;
 import org.HealthCare.healthcare.Repository.PatientRepository;
 import org.HealthCare.healthcare.Repository.RendezVousRepository;
 import org.HealthCare.healthcare.enums.StatutRendezVous;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ public class RendezVousService {
         this.medecinRepository = medecinRepository;
     }
 
+    @CacheEvict(value = "rendezvous", allEntries = true)
     public ResponseRendezVousDTO createRendezVous(RequestRendezVousDTO dto){
         Patient patient = patientRepository.findById(dto.getPatientId()).
                 orElseThrow(()-> new RuntimeException("Patient not found"));
@@ -43,6 +46,7 @@ public class RendezVousService {
         return rendezVousMapper.toResponseDTO(rendezVous);
     }
 
+    @CacheEvict(value = "rendezvous", allEntries = true)
     public ResponseRendezVousDTO updateRendezVous(Long id , PutRendezVousDTO dto){
         RendezVous dejaExists = rendezVousRepository.findById(id).
                 orElseThrow(()-> new RuntimeException("Rendez Vous not found"));
@@ -51,6 +55,7 @@ public class RendezVousService {
         return rendezVousMapper.toResponseDTO(rendezVous);
     }
 
+    @CacheEvict(value = "rendezvous", allEntries = true)
     public ResponseRendezVousDTO annulerRendezVous(Long id){
         RendezVous dejaExists = rendezVousRepository.findById(id).
                 orElseThrow(()-> new RuntimeException("Rendez Vous not found"));
@@ -59,36 +64,43 @@ public class RendezVousService {
         return rendezVousMapper.toResponseDTO(rendezVous);
     }
 
+    @Cacheable(value = "rendezvous", key = "'all-' + #pageable.pageNumber")
     public Page<ResponseRendezVousDTO> getAllRendezVous(Pageable pageable){
         Page<RendezVous> page = rendezVousRepository.findAll(pageable);
         return page.map(rendezVousMapper::toResponseDTO);
     }
 
+    @Cacheable(value = "rendezvous", key = "'patient-' + #nom + '-' + #pageable.pageNumber")
     public Page<ResponseRendezVousDTO> findRendezVousPatientByNom(String nom, Pageable pageable){
         Page<RendezVous> rendezVous = rendezVousRepository.findByPatient_Nom(nom, pageable);
         return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
 
+    @Cacheable(value = "rendezvous", key = "'medecin-' + #nom + '-' + #pageable.pageNumber")
     public Page<ResponseRendezVousDTO> findRendezVousMedecinByNom(String nom, Pageable pageable){
         Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Nom(nom, pageable);
         return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
 
+    @Cacheable(value = "rendezvous", key = "'medecin-date-' + #id + '-' + #date + '-' + #pageable.pageNumber")
     public Page<ResponseRendezVousDTO> recuperDesRendezVousDeMedecinByDate(Long id, java.time.LocalDate date, Pageable pageable) {
         Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_IdAndDateRendezVous(id, date, pageable);
         return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
 
+    @Cacheable(value = "rendezvous", key = "'statut-' + #statut + '-' + #pageable.pageNumber")
     public Page<ResponseRendezVousDTO> afficherRdvParStatut(StatutRendezVous statut, Pageable pageable){
         Page<RendezVous> rendezVous = rendezVousRepository.findByStatut(statut, pageable);
         return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
 
+    @Cacheable(value = "rendezvous", key = "'patient-id-' + #id + '-' + #pageable.pageNumber")
     public Page<ResponseRendezVousDTO> findRendezVousPatientById(Long id, Pageable pageable){
         Page<RendezVous> rendezVous = rendezVousRepository.findByPatient_Id(id, pageable);
         return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
 
+    @Cacheable(value = "rendezvous", key = "'medecin-id-' + #id + '-' + #pageable.pageNumber")
     public Page<ResponseRendezVousDTO> findRendezVousMedecinById(Long id, Pageable pageable){
         Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Id(id, pageable);
         return rendezVous.map(rendezVousMapper::toResponseDTO);

@@ -6,6 +6,8 @@ import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
 import org.HealthCare.healthcare.Entity.Medecin;
 import org.HealthCare.healthcare.Mapper.MedecinMapper;
 import org.HealthCare.healthcare.Repository.MedecinRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +24,14 @@ public class MedecinService {
         this.medecinMapper = medecinMapper;
     }
 
+    @CacheEvict(value = "medecins", allEntries = true)
     public ResponseMedecinDTO addMedecin(RequestMedecinDTO dto){
         Medecin medecinMapperEntity = medecinMapper.toEntity(dto);
         Medecin medecin = medecinRepository.save(medecinMapperEntity);
         return medecinMapper.toResponseDTO(medecin);
     }
 
+    @CacheEvict(value = "medecins", allEntries = true)
     public ResponseMedecinDTO updateMedecin(Long id , PutMedecinDTO dto){
         Medecin medecinDejaExists = medecinRepository.findById(id).
                 orElseThrow(()-> new RuntimeException("Medecin introuvable"));
@@ -36,27 +40,32 @@ public class MedecinService {
         return medecinMapper.toResponseDTO(medecin);
     }
 
+    @CacheEvict(value = "medecins", allEntries = true)
     public void deleteMedecin(Long id){
         medecinRepository.deleteById(id);
     }
 
+    @Cacheable(value = "medecins", key = "#id")
     public ResponseMedecinDTO getMedecinById(Long id) {
         Medecin medecin = medecinRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medecin introuvable"));
         return medecinMapper.toResponseDTO(medecin);
     }
 
+    @Cacheable(value = "medecins", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<ResponseMedecinDTO> getAllMedecin(Pageable pageable){
         Page<Medecin> page = medecinRepository.findAll(pageable);
                 return page.map(medecinMapper::toResponseDTO);
 
     }
 
+    @Cacheable(value = "medecins", key = "#tele + '-' + #pageable.pageNumber")
     public Page<ResponseMedecinDTO> getPatientByTele(Long tele , Pageable pageable){
         Page<Medecin> page = medecinRepository.findMedecinByTelephone(tele , pageable);
         return page.map(medecinMapper::toResponseDTO);
     }
 
+    @Cacheable(value = "medecins", key = "#specialite + '-' + #pageable.pageNumber")
     public Page<ResponseMedecinDTO> searchMedecinBySpecialite(String specialite, Pageable pageable) {
         Page<Medecin> medecins = medecinRepository.findBySpecialiteContaining(specialite, pageable);
         return medecins.map(medecinMapper::toResponseDTO);

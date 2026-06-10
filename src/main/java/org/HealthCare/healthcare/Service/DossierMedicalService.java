@@ -9,6 +9,8 @@ import org.HealthCare.healthcare.Entity.Patient;
 import org.HealthCare.healthcare.Mapper.DossierMedicalMapper;
 import org.HealthCare.healthcare.Repository.DossierMedicalRepository;
 import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,7 @@ public class DossierMedicalService {
         this.patientRepository = patientRepository;
     }
 
+    @CacheEvict(value = "dossiers", allEntries = true)
     public ResponseDossierMedicalDTO createDossierMedical(RequestDossierMedicalDTO dto){
         Patient patient = patientRepository.findById(dto.getPatientId())
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
@@ -38,6 +41,7 @@ public class DossierMedicalService {
         return dossierMedicalMapper.toResponse(dossierMedical);
     }
 
+    @CacheEvict(value = "dossiers", allEntries = true)
     public ResponseDossierMedicalDTO addDiagnostic(Long id , AddDiagnosticDTO dto){
         DossierMedical dejaExists = getDossierOrThrow(id);
         dejaExists.setDiagnostic(dto.getDiagnostic());
@@ -45,6 +49,7 @@ public class DossierMedicalService {
         return dossierMedicalMapper.toResponse(dossierMedical);
     }
 
+    @CacheEvict(value = "dossiers", allEntries = true)
     public ResponseDossierMedicalDTO addObservation(Long id , AddObservationDTO dto){
         DossierMedical dejaExists = getDossierOrThrow(id);
         dejaExists.setObservation(dto.getObservation());
@@ -52,6 +57,7 @@ public class DossierMedicalService {
         return dossierMedicalMapper.toResponse(dossierMedical);
     }
 
+    @Cacheable(value = "dossiers", key = "#id")
     public ResponseDossierMedicalDTO getDossierById(Long id){
         DossierMedical dossierMedical = getDossierOrThrow(id);
         return dossierMedicalMapper.toResponse(dossierMedical);
@@ -62,11 +68,13 @@ public class DossierMedicalService {
                 .orElseThrow(() -> new RuntimeException("Dossier not found"));
     }
 
+    @Cacheable(value = "dossiers", key = "#pageable.pageNumber")
     public Page<ResponseDossierMedicalDTO> getAllDossierMedical(Pageable pageable){
         Page<DossierMedical> page = dossierMedicalRepository.findAll(pageable);
         return page.map(dossierMedicalMapper::toResponse);
     }
 
+    @Cacheable(value = "dossiers", key = "'patient-' + #patientId")
     public ResponseDossierMedicalDTO getDossierByPatientId(Long patientId) {
         DossierMedical dossier = dossierMedicalRepository.findByPatient_Id(patientId)
                 .orElseThrow(() -> new RuntimeException("Dossier medical introuvable"));
