@@ -23,11 +23,18 @@ public class DossierMedicalService {
     private DossierMedicalRepository dossierMedicalRepository;
     private DossierMedicalMapper dossierMedicalMapper;
     private PatientRepository patientRepository;
+    private PdfGeneratorService pdfGeneratorService;
 
-    public DossierMedicalService(DossierMedicalRepository dossierMedicalRepository , DossierMedicalMapper dossierMedicalMapper , PatientRepository patientRepository){
+    public DossierMedicalService(DossierMedicalRepository dossierMedicalRepository , DossierMedicalMapper dossierMedicalMapper , PatientRepository patientRepository, PdfGeneratorService pdfGeneratorService){
         this.dossierMedicalRepository = dossierMedicalRepository;
         this.dossierMedicalMapper = dossierMedicalMapper;
         this.patientRepository = patientRepository;
+        this.pdfGeneratorService = pdfGeneratorService;
+    }
+
+    public byte[] exportDossierToPdf(Long id) {
+        DossierMedical dossier = getDossierOrThrow(id);
+        return pdfGeneratorService.generateDossierMedicalPdf(dossier);
     }
 
     @CacheEvict(value = "dossiers", allEntries = true)

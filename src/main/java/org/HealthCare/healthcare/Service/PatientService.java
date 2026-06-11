@@ -18,10 +18,22 @@ import java.util.List;
 public class PatientService {
     private PatientRepository patientRepository;
     private PatientMapper patientMapper;
+    private PdfGeneratorService pdfGeneratorService;
 
-    public PatientService(PatientRepository patientRepository , PatientMapper patientMapper){
+    public PatientService(PatientRepository patientRepository , PatientMapper patientMapper, PdfGeneratorService pdfGeneratorService){
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
+        this.pdfGeneratorService = pdfGeneratorService;
+    }
+
+    public byte[] generatePatientReport(Long id) {
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        String content = "Rapport pour le patient: " + patient.getNom() + " " + patient.getPrenom() + "\n" +
+                "Téléphone: " + patient.getTelephone() + "\n" +
+                "Date de naissance: " + patient.getDateNaissance() + "\n" +
+                "Nombre de rendez-vous: " + (patient.getRendezVous() != null ? patient.getRendezVous().size() : 0);
+        return pdfGeneratorService.generateSimpleReportPdf(content);
     }
 
     @CacheEvict(value = "patients", allEntries = true)

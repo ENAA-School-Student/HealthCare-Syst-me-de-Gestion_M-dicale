@@ -17,6 +17,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
 @RestController
 @RequestMapping("/api/dossiers")
 public class DossierMedicalController {
@@ -24,6 +28,16 @@ public class DossierMedicalController {
 
     public DossierMedicalController(DossierMedicalService dossierMedicalService){
         this.dossierMedicalService = dossierMedicalService;
+    }
+
+    @GetMapping("/{id}/download")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@dossierMedicalService.getDossierById(#id).patientId).userId)")
+    public ResponseEntity<byte[]> downloadDossierPdf(@PathVariable Long id) {
+        byte[] pdf = dossierMedicalService.exportDossierToPdf(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "dossier_medical_" + id + ".pdf");
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }
 
     @PostMapping

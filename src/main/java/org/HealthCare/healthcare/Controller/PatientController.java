@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 @RestController
 @RequestMapping("/api/patients")
 public class PatientController {
@@ -22,6 +25,16 @@ public class PatientController {
 
     public PatientController(PatientService patientService){
         this.patientService = patientService;
+    }
+
+    @GetMapping("/{id}/report")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(#id).userId)")
+    public ResponseEntity<byte[]> downloadPatientReport(@PathVariable Long id) {
+        byte[] pdf = patientService.generatePatientReport(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "rapport_patient_" + id + ".pdf");
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }
 
     @PostMapping

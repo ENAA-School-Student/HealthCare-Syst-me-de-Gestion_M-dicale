@@ -25,12 +25,21 @@ public class RendezVousService {
     private RendezVousMapper rendezVousMapper;
     private PatientRepository patientRepository;
     private MedecinRepository medecinRepository;
+    private PdfGeneratorService pdfGeneratorService;
 
-    public RendezVousService(RendezVousRepository rendezVousRepository , RendezVousMapper rendezVousMapper , PatientRepository patientRepository , MedecinRepository medecinRepository){
+    public RendezVousService(RendezVousRepository rendezVousRepository , RendezVousMapper rendezVousMapper , PatientRepository patientRepository , MedecinRepository medecinRepository, PdfGeneratorService pdfGeneratorService){
         this.rendezVousRepository = rendezVousRepository;
         this.rendezVousMapper = rendezVousMapper;
         this.patientRepository = patientRepository;
         this.medecinRepository = medecinRepository;
+        this.pdfGeneratorService = pdfGeneratorService;
+    }
+
+    public byte[] exportRendezVousByPatientToPdf(Long patientId) {
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        List<RendezVous> rendezVousList = rendezVousRepository.findByPatient_Id(patientId);
+        return pdfGeneratorService.generateRendezVousListPdf(patient, rendezVousList);
     }
 
     @CacheEvict(value = "rendezvous", allEntries = true)

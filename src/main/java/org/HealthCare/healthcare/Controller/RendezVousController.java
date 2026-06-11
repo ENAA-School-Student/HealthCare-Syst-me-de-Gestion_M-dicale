@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 @RestController
 @RequestMapping("/api/rendezvous")
 public class RendezVousController {
@@ -28,6 +31,16 @@ public class RendezVousController {
 
     public RendezVousController(RendezVousService rendezVousService){
         this.rendezVousService = rendezVousService;
+    }
+
+    @GetMapping("/patient/{patientId}/download")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(#patientId).userId)")
+    public ResponseEntity<byte[]> downloadRendezVousPdf(@PathVariable Long patientId) {
+        byte[] pdf = rendezVousService.exportRendezVousByPatientToPdf(patientId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "rendez_vous_patient_" + patientId + ".pdf");
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
     }
 
     @PostMapping
