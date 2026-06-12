@@ -1,4 +1,4 @@
-name: CI-CD Railway
+name: Simple CI/CD Railway
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   ci:
-    name: Build
+    name: Build Maven
     runs-on: ubuntu-latest
 
     steps:
@@ -42,26 +42,35 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Check required secrets
+      - name: Validate deploy secrets
+        id: check_secrets
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
         run: |
-          if [ -z "$RAILWAY_TOKEN" ] || [ -z "$RAILWAY_PROJECT_ID" ] || [ -z "$RAILWAY_SERVICE" ]; then
-            echo "Missing required secrets: RAILWAY_TOKEN, RAILWAY_PROJECT_ID, RAILWAY_SERVICE"
-            exit 1
+          if [ -z "$RAILWAY_TOKEN" ] || [ -z "$RAILWAY_SERVICE" ]; then
+            echo "Skipping deploy: missing RAILWAY_TOKEN or RAILWAY_SERVICE"
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Deploy
+        if: steps.check_secrets.outputs.proceed == 'true'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
           RAILWAY_ENVIRONMENT: ${{ secrets.RAILWAY_ENVIRONMENT }}
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
         run: |
+          # Railway uses token/service; project/environment are optional.
           if [ -n "$RAILWAY_ENVIRONMENT" ]; then
             railway up --service "$RAILWAY_SERVICE" --environment "$RAILWAY_ENVIRONMENT"
           else
             railway up --service "$RAILWAY_SERVICE"
           fi
+
+      - name: Deploy skipped
+        if: steps.check_secrets.outputs.proceed != 'true'
+        run: echo "Deploy skipped (configure repository secrets to enable Railway deploy)."
+
