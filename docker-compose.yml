@@ -9,8 +9,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://sql10.freesqldatabase.com:3306/sql10830133?allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=sql10830133
       - SPRING_DATASOURCE_PASSWORD=8n8yKGj9VB
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_URL=redis://redis:6379
       - SPRING_CACHE_TYPE=redis
     depends_on:
       - redis
