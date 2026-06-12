@@ -12,7 +12,7 @@ services:
       - SPRING_DATA_REDIS_URL=redis://redis:6379
       - SPRING_DATA_REDIS_SSL=false
       - SPRING_CACHE_TYPE=redis
-      - JWT_SECRET=VotreSuperSecretKeyIciQuiDoitEtreAssezLongue123456
+      - JWT_SECRET=MaCleSecreteSuperLongueEtSecurisee1234567890
       - JWT_EXPIRATION=86400000
     depends_on:
       - redis
