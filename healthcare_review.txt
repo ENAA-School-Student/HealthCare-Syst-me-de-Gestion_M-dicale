@@ -1,0 +1,3494 @@
+﻿
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\.github\workflows\workflow.yml =====
+
+name: Simple CI/CD Railway
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: Build Maven
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Ensure Maven wrapper is executable
+        run: chmod +x mvnw
+
+      - name: Build (skip tests)
+        run: ./mvnw -B -DskipTests clean package
+
+  deploy:
+    name: Deploy to Railway
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Validate deploy secrets
+        id: check_secrets
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ] || [ -z "$RAILWAY_SERVICE" ]; then
+            echo "Skipping deploy: missing RAILWAY_TOKEN or RAILWAY_SERVICE"
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy
+        if: steps.check_secrets.outputs.proceed == 'true'
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_ENVIRONMENT: ${{ secrets.RAILWAY_ENVIRONMENT }}
+          RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
+        run: |
+          # Railway uses token/service; project/environment are optional.
+          if [ -n "$RAILWAY_ENVIRONMENT" ]; then
+            railway up --service "$RAILWAY_SERVICE" --environment "$RAILWAY_ENVIRONMENT"
+          else
+            railway up --service "$RAILWAY_SERVICE"
+          fi
+
+      - name: Deploy skipped
+        if: steps.check_secrets.outputs.proceed != 'true'
+        run: echo "Deploy skipped (configure repository secrets to enable Railway deploy)."
+
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\.idea\compiler.xml =====
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for HealthCare" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
+        </processorPath>
+        <module name="HealthCare" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="HealthCare" options="-parameters" />
+    </option>
+  </component>
+</project>
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\.idea\encodings.xml =====
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+  </component>
+</project>
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\.idea\jarRepositories.xml =====
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteRepositoriesConfiguration">
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Central Repository" />
+      <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Maven Central repository" />
+      <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="jboss.community" />
+      <option name="name" value="JBoss Community repository" />
+      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+  </component>
+</project>
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\.idea\misc.xml =====
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK" />
+</project>
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\.idea\vcs.xml =====
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+  </component>
+</project>
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\.idea\workspace.xml =====
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="05e2a9e8-d232-46c1-8f8f-eb2933abbcea" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/enaa/IdeaProjects/HealthCare-Syst-me-de-Gestion_M-dicale" value="3E5WPO05al8UULtH6eW0BFygy6y" />
+    </persistenceIdMap>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="GitHub Workflow" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Rida1019-taki&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ENAA-School-Student/HealthCare-Syst-me-de-Gestion_M-dicale.git&quot;,
+    &quot;accountId&quot;: &quot;bcbd8dd6-88b5-4211-ace9-18e1e3224763&quot;
+  }
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3E5WPO05al8UULtH6eW0BFygy6y" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectSessionTemplates">
+    <option name="panelTemplate">
+      <template>
+        <option name="modeId" value="Agent" />
+        <option name="model">
+          <model>
+            <option name="modelType" value="builtin_id" />
+            <option name="modelValue" value="gpt-5.3-codex" />
+          </model>
+        </option>
+        <option name="targetType" value="LOCAL" />
+      </template>
+    </option>
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.HealthCareApplication.executor&quot;: &quot;Run&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/enaa/IdeaProjects/HealthCare-Syst-me-de-Gestion_M-dicale&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="HealthCareApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="HealthCare" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="org.HealthCare.healthcare.HealthCareApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.32098.37" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="05e2a9e8-d232-46c1-8f8f-eb2933abbcea" name="Changes" comment="" />
+      <created>1779468886605</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779468886605</updated>
+      <workItem from="1779468890441" duration="82000" />
+      <workItem from="1780303158639" duration="1766000" />
+      <workItem from="1780305757372" duration="1495000" />
+      <workItem from="1780312867088" duration="325000" />
+      <workItem from="1780314454357" duration="2000" />
+      <workItem from="1780391153778" duration="10469000" />
+      <workItem from="1780927495143" duration="991000" />
+      <workItem from="1780993903615" duration="4612000" />
+      <workItem from="1781082047716" duration="5613000" />
+      <workItem from="1781109316262" duration="613000" />
+      <workItem from="1781190150916" duration="5975000" />
+      <workItem from="1781208653452" duration="1734000" />
+      <workItem from="1781214100760" duration="1785000" />
+      <workItem from="1781216366460" duration="601000" />
+      <workItem from="1781253106641" duration="781000" />
+      <workItem from="1781255086659" duration="10369000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\.mvn\wrapper\maven-wrapper.properties =====
+
+wrapperVersion=3.3.4
+distributionType=only-script
+distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.14/apache-maven-3.9.14-bin.zip
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Controller\AuthController.java =====
+
+package org.HealthCare.healthcare.Controller;
+
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.HealthCare.healthcare.DTO.patient.auth.AuthResponse;
+import org.HealthCare.healthcare.DTO.patient.auth.LoginRequest;
+import org.HealthCare.healthcare.DTO.patient.auth.RegistreRequest;
+import org.HealthCare.healthcare.Service.AuthService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/auth")
+@Slf4j
+public class AuthController {
+    private AuthService authService;
+
+    public AuthController(AuthService authService){
+        this.authService = authService;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegistreRequest request) {
+        return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Controller\DossierMedicalController.java =====
+
+package org.HealthCare.healthcare.Controller;
+
+import jakarta.validation.Valid;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.AddDiagnosticDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.AddObservationDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedicalDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.ResponseDossierMedicalDTO;
+import org.HealthCare.healthcare.Entity.User;
+import org.HealthCare.healthcare.Service.DossierMedicalService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
+@RestController
+@RequestMapping("/api/dossiers")
+public class DossierMedicalController {
+    private DossierMedicalService dossierMedicalService;
+
+    public DossierMedicalController(DossierMedicalService dossierMedicalService){
+        this.dossierMedicalService = dossierMedicalService;
+    }
+
+    @GetMapping("/{id}/download")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@dossierMedicalService.getDossierById(#id).patientId).userId)")
+    public ResponseEntity<byte[]> downloadDossierPdf(@PathVariable Long id) {
+        byte[] pdf = dossierMedicalService.exportDossierToPdf(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "dossier_medical_" + id + ".pdf");
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('MEDECIN')")
+    public ResponseEntity<ResponseDossierMedicalDTO> createDossierMedical(@Valid @RequestBody RequestDossierMedicalDTO dto){
+        ResponseDossierMedicalDTO responseDossierMedicalDTO = dossierMedicalService.createDossierMedical(dto);
+        return new ResponseEntity<>(responseDossierMedicalDTO , HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}/diagnostic")
+    @PreAuthorize("hasRole('MEDECIN')")
+    public ResponseEntity<ResponseDossierMedicalDTO> addDiagnostic(@PathVariable Long id , @Valid @RequestBody AddDiagnosticDTO dto){
+        return ResponseEntity.ok(dossierMedicalService.addDiagnostic(id , dto));
+    }
+
+    @PutMapping("/{id}/observation")
+    @PreAuthorize("hasRole('MEDECIN')")
+    public ResponseEntity<ResponseDossierMedicalDTO> addObservation(@PathVariable Long id , @Valid @RequestBody AddObservationDTO dto){
+        return ResponseEntity.ok(dossierMedicalService.addObservation(id, dto));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN')")
+    public ResponseEntity<ResponseDossierMedicalDTO> getDossierMedicalById(@PathVariable Long id){
+        return ResponseEntity.ok(dossierMedicalService.getDossierById(id));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<ResponseDossierMedicalDTO> getMyDossier(@AuthenticationPrincipal User user) {
+        if (user.getPatient() != null) {
+            return ResponseEntity.ok(dossierMedicalService.getDossierByPatientId(user.getPatient().getId()));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseDossierMedicalDTO>> getAllDossierMedical(@PageableDefault(sort = "dateCreation", direction = Sort.Direction.DESC) Pageable pageable){
+        return ResponseEntity.ok(dossierMedicalService.getAllDossierMedical(pageable));
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Controller\MedecinController.java =====
+
+package org.HealthCare.healthcare.Controller;
+
+import jakarta.validation.Valid;
+import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.RequestMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
+import org.HealthCare.healthcare.Service.MedecinService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/medecins")
+public class MedecinController {
+    private MedecinService medecinService;
+
+    public MedecinController(MedecinService medecinService){
+        this.medecinService = medecinService;
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponseMedecinDTO> addMedecin(@Valid @RequestBody RequestMedecinDTO dto){
+        ResponseMedecinDTO responseMedecinDTO = medecinService.addMedecin(dto);
+        return new ResponseEntity<>(responseMedecinDTO ,HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MEDECIN') and principal.id == @medecinService.getMedecinById(#id).userId)")
+    public ResponseEntity<ResponseMedecinDTO> updateMedecin(@PathVariable Long id , @Valid @RequestBody PutMedecinDTO dto){
+        return ResponseEntity.ok(medecinService.updateMedecin(id , dto));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteMedecin(@PathVariable Long id){
+        medecinService.deleteMedecin(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('MEDECIN') and principal.id == @medecinService.getMedecinById(#id).userId)")
+    public ResponseEntity<ResponseMedecinDTO> getMedecinById(@PathVariable Long id){
+        return ResponseEntity.ok(medecinService.getMedecinById(id));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseMedecinDTO>> getAllMedecin(Pageable pageable){
+        return ResponseEntity.ok(medecinService.getAllMedecin(pageable));
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseMedecinDTO>> searchMedecinBySpecialite(@RequestParam String specialite, @PageableDefault(sort = "specialite") Pageable pageable){
+        return ResponseEntity.ok(medecinService.searchMedecinBySpecialite(specialite, pageable));
+    }
+
+    @GetMapping("/telephone")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseMedecinDTO>> getMedecinByTele(@RequestParam Long tele, Pageable pageable){
+        return ResponseEntity.ok(medecinService.getPatientByTele(tele , pageable));
+    }
+
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Controller\PatientController.java =====
+
+package org.HealthCare.healthcare.Controller;
+
+import jakarta.validation.Valid;
+import org.HealthCare.healthcare.DTO.patient.PutPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.RequestPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.ResponsePatientDTO;
+import org.HealthCare.healthcare.Service.PatientService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+@RestController
+@RequestMapping("/api/patients")
+public class PatientController {
+    private PatientService patientService;
+
+    public PatientController(PatientService patientService){
+        this.patientService = patientService;
+    }
+
+    @GetMapping("/{id}/report")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(#id).userId)")
+    public ResponseEntity<byte[]> downloadPatientReport(@PathVariable Long id) {
+        byte[] pdf = patientService.generatePatientReport(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "rapport_patient_" + id + ".pdf");
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ResponsePatientDTO> addPatient(@Valid @RequestBody RequestPatientDTO dto){
+        ResponsePatientDTO patientDTO = patientService.addPatient(dto);
+        return new ResponseEntity<>(patientDTO ,HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(#id).userId)")
+    public ResponseEntity<ResponsePatientDTO> updatePatient(@PathVariable Long id , @Valid @RequestBody PutPatientDTO dto){
+        return ResponseEntity.ok(patientService.updatePatient(id , dto));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deletePatient(@PathVariable Long id){
+        patientService.deletePatient(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponsePatientDTO>> getAllPatients(Pageable pageable){
+        return ResponseEntity.ok(patientService.getAllPatients(pageable));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(#id).userId)")
+    public ResponseEntity<ResponsePatientDTO> getPatientById(@PathVariable Long id){
+        return ResponseEntity.ok(patientService.getPatientById(id));
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponsePatientDTO>> searchPatientByNom(@RequestParam String nom, @PageableDefault(sort = "nom") Pageable pageable){
+        return ResponseEntity.ok(patientService.searchPatientByNom(nom, pageable));
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Controller\RendezVousController.java =====
+
+package org.HealthCare.healthcare.Controller;
+
+import jakarta.validation.Valid;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
+import org.HealthCare.healthcare.Service.RendezVousService;
+import org.HealthCare.healthcare.Entity.User;
+import org.HealthCare.healthcare.enums.RoleUser;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+@RestController
+@RequestMapping("/api/rendezvous")
+public class RendezVousController {
+    private RendezVousService rendezVousService;
+
+    public RendezVousController(RendezVousService rendezVousService){
+        this.rendezVousService = rendezVousService;
+    }
+
+    @GetMapping("/patient/{patientId}/download")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(#patientId).userId)")
+    public ResponseEntity<byte[]> downloadRendezVousPdf(@PathVariable Long patientId) {
+        byte[] pdf = rendezVousService.exportRendezVousByPatientToPdf(patientId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "rendez_vous_patient_" + patientId + ".pdf");
+        return new ResponseEntity<>(pdf, headers, HttpStatus.OK);
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<ResponseRendezVousDTO> createRendezVous(@Valid @RequestBody RequestRendezVousDTO dto){
+        ResponseRendezVousDTO responseRendezVousDTO = rendezVousService.createRendezVous(dto);
+        return new ResponseEntity<>(responseRendezVousDTO , HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<ResponseRendezVousDTO> updateRendezVous(@PathVariable Long id , @Valid @RequestBody PutRendezVousDTO dto){
+        return ResponseEntity.ok(rendezVousService.updateRendezVous(id, dto));
+    }
+
+    @PutMapping("/{id}/annuler")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<ResponseRendezVousDTO> annulerRendezVous(@PathVariable Long id){
+        return ResponseEntity.ok(rendezVousService.annulerRendezVous(id));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getAllRendezVous(Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.getAllRendezVous(pageable));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyRole('PATIENT', 'MEDECIN')")
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getMyRendezVous(@AuthenticationPrincipal User user, Pageable pageable) {
+        if (user.getRole() == RoleUser.PATIENT && user.getPatient() != null) {
+            return ResponseEntity.ok(rendezVousService.findRendezVousPatientById(user.getPatient().getId(), pageable));
+        } else if (user.getRole() == RoleUser.MEDECIN && user.getMedecin() != null) {
+            return ResponseEntity.ok(rendezVousService.findRendezVousMedecinById(user.getMedecin().getId(), pageable));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @GetMapping("/patient/{nom}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousPatientByNom(@PathVariable String nom, Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.findRendezVousPatientByNom(nom, pageable));
+    }
+
+    @GetMapping("/medecin/{nom}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousMedecinByNom(@PathVariable String nom, Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.findRendezVousMedecinByNom(nom, pageable));
+    }
+
+    @GetMapping("/medecin")
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousDeMedecin
+            (@RequestParam Long id , @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date, Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.recuperDesRendezVousDeMedecinByDate(id , date, pageable));
+    }
+
+    @GetMapping("/statut/{statut}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousByStatut(@PathVariable StatutRendezVous statut, @PageableDefault(sort = "dateRendezVous") Pageable pageable){
+        return ResponseEntity.ok(rendezVousService.afficherRdvParStatut(statut, pageable));
+    }
+
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\auth\AuthResponse.java =====
+
+package org.HealthCare.healthcare.DTO.patient.auth;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuthResponse {
+    private String token;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\auth\LoginRequest.java =====
+
+package org.HealthCare.healthcare.DTO.patient.auth;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class LoginRequest {
+    @NotBlank(message = "email obligatoire ")
+    @Email(message = "email invalid ")
+    private String email;
+
+    @NotBlank(message = "password invalid ")
+    private String password;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\auth\RegistreRequest.java =====
+
+package org.HealthCare.healthcare.DTO.patient.auth;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import org.HealthCare.healthcare.enums.RoleUser;
+
+@Data
+public class RegistreRequest {
+    @NotBlank(message = "user name obligatoire ")
+    private String username;
+
+
+    @NotBlank(message = "email obligatoire")
+    @Email(message = "email invalid ")
+    private String email;
+
+    @NotNull(message = "role obligatoire")
+    private RoleUser role;
+
+    @NotBlank(message = "password obligatoire")
+    private String password;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\dossierMedical\AddDiagnosticDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.dossierMedical;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class AddDiagnosticDTO {
+    @NotBlank(message = "Le diagnostic est obligatoire")
+    private String diagnostic;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\dossierMedical\AddObservationDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.dossierMedical;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class AddObservationDTO {
+    @NotBlank(message = "Le observation est obligatoire")
+    private String observation;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\dossierMedical\PutDossierMedicalDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.dossierMedical;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class PutDossierMedicalDTO {
+    @NotNull(message = "Le patient_id est obligatoire")
+    private Long patientId;
+    @NotBlank(message = "Le diagnostic est obligatoire")
+    private String diagnostic;
+    @NotBlank(message = "Le observation est obligatoire")
+    private String observation;
+    @NotNull(message = "Le date cration est obligatoire")
+    private LocalDate dateCreation;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\dossierMedical\RequestDossierMedicalDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.dossierMedical;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class RequestDossierMedicalDTO {
+    @NotNull(message = "Le patient_id est obligatoire")
+    private Long patientId;
+    @NotBlank(message = "Le diagnostic est obligatoire")
+    private String diagnostic;
+    @NotBlank(message = "Le observation est obligatoire")
+    private String observation;
+    @NotNull(message = "Le date cration est obligatoire")
+    private LocalDate dateCreation;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\dossierMedical\ResponseDossierMedicalDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.dossierMedical;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class ResponseDossierMedicalDTO {
+    private Long id;
+    private String diagnostic;
+    private String observation;
+    private LocalDate dateCreation;
+    private Long patientId;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\medecin\CountRdvDeMedecinDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.medecin;
+
+import lombok.Data;
+
+@Data
+public class CountRdvDeMedecinDTO {
+    private String nom;
+    private Long totalRdv;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\medecin\PutMedecinDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.medecin;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class PutMedecinDTO {
+    @NotBlank(message = "Le nom est obligatoire")
+    private String nom;
+    @NotBlank(message = "Le specialite est obligatoire")
+    private String specialite;
+    @NotBlank(message = "Le email est obligatoire")
+    @Email(message = "L'email doit Ãªtre valide")
+    private String email;
+    @NotNull(message = "Le telephone est obligatoire")
+    private Long telephone;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\medecin\RequestMedecinDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.medecin;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class RequestMedecinDTO {
+    @NotBlank(message = "Le nom est obligatoire")
+    private String nom;
+    @NotBlank(message = "Le specialite est obligatoire")
+    private String specialite;
+    @NotBlank(message = "Le email est obligatoire")
+    @Email(message = "L'email doit Ãªtre valide")
+    private String email;
+    @NotNull(message = "Le telephone est obligatoire")
+    private Long telephone;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\medecin\ResponseMedecinDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.medecin;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class ResponseMedecinDTO {
+    private Long id;
+    private String nom;
+    private String specialite;
+    private String email;
+    private Long telephone;
+    private Long userId;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\rendezVous\PutRendezVousDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.rendezVous;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class PutRendezVousDTO {
+    @NotNull(message = "Le patient_id est obligatoire")
+    private Long patientId;
+    @NotNull(message = "Le medecin_id est obligatoire")
+    private Long medecinId;
+    @NotNull(message = "Le date de rendez vous est obligatoire")
+    private LocalDate dateRendezVous;
+    @NotNull(message = "Le type de rendez vous est obligatoire")
+    private StatutRendezVous statut;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\rendezVous\RequestRendezVousDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.rendezVous;
+
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class RequestRendezVousDTO {
+    @NotNull(message = "Le patient_id est obligatoire")
+    private Long patientId;
+    @NotNull(message = "Le medecin_id est obligatoire")
+    private Long medecinId;
+    @NotNull(message = "Le date de rendez vous est obligatoire")
+    private LocalDate dateRendezVous;
+    @NotNull(message = "Le type de rendez vous est obligatoire")
+    private StatutRendezVous statut;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\rendezVous\ResponseRendezVousDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient.rendezVous;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class ResponseRendezVousDTO {
+    private Long id;
+    private LocalDate dateRendezVous;
+    private StatutRendezVous statut;
+    private Long patientId;
+    private Long medecinId;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\PutPatientDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class PutPatientDTO {
+    @NotBlank(message = "Le nom est obligatoire")
+    private String nom;
+    @NotBlank(message = "Le prenom est obligatoire")
+    private String prenom;
+    @NotNull(message = "Le telephone est obligatoire")
+    private Long telephone;
+    @NotNull(message = "Le date de naissance est obligatoire")
+    private LocalDate dateNaissance;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\RequestPatientDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class RequestPatientDTO {
+    @NotBlank(message = "Le nom est obligatoire")
+    private String nom;
+    @NotBlank(message = "Le prenom est obligatoire")
+    private String prenom;
+    @NotNull(message = "Le telephone est obligatoire")
+    private Long telephone;
+    @NotNull(message = "Le date de naissance est obligatoire")
+    private LocalDate dateNaissance;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\DTO\patient\ResponsePatientDTO.java =====
+
+package org.HealthCare.healthcare.DTO.patient;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Getter
+@Setter
+public class ResponsePatientDTO {
+    private Long id;
+    private String nom;
+    private String prenom;
+    private Long telephone;
+    private LocalDate dateNaissance;
+    private Long userId;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Entity\DossierMedical.java =====
+
+package org.HealthCare.healthcare.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "dossier_medical")
+@Getter
+@Setter
+public class DossierMedical {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String diagnostic;
+    private String observation;
+    private LocalDate dateCreation;
+
+    public DossierMedical(String diagnostic, String observation, LocalDate dateCreation) {
+        this.diagnostic = diagnostic;
+        this.observation = observation;
+        this.dateCreation = dateCreation;
+    }
+
+    public DossierMedical() {
+    }
+
+    @OneToOne
+    @JoinColumn(name = "patient_id")
+    @JsonIgnore
+    private Patient patient;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Entity\Medecin.java =====
+
+package org.HealthCare.healthcare.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+@Entity
+@Table(name = "medecin")
+@Getter
+@Setter
+public class Medecin {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nom;
+    private String specialite;
+    private String email;
+    private Long telephone;
+
+    public Medecin(String nom, String specialite, String email, Long telephone) {
+        this.nom = nom;
+        this.specialite = specialite;
+        this.email = email;
+        this.telephone = telephone;
+    }
+
+    public Medecin() {
+    }
+
+    @OneToMany(mappedBy = "medecin")
+    @JsonIgnore
+    private List<RendezVous> rendezVous;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Entity\Patient.java =====
+
+package org.HealthCare.healthcare.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Entity
+@Table(name = "patient")
+@Getter
+@Setter
+public class Patient {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nom;
+    private String prenom;
+    private Long telephone;
+    private LocalDate dateNaissance;
+
+    public Patient(String nom, String prenom, Long telephone, LocalDate dateNaissance) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.telephone = telephone;
+        this.dateNaissance = dateNaissance;
+    }
+
+    public Patient() {
+    }
+
+    @OneToMany(mappedBy = "patient")
+    @JsonIgnore
+    private List<RendezVous> rendezVous;
+
+    @OneToOne(mappedBy = "patient" , cascade = CascadeType.ALL)
+    @JsonIgnore
+    private DossierMedical dossierMedical;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Entity\RendezVous.java =====
+
+package org.HealthCare.healthcare.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "rendez_vous")
+@Getter
+@Setter
+public class RendezVous {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private LocalDate dateRendezVous;
+    @Enumerated(EnumType.STRING)
+    private StatutRendezVous statut;
+
+    public RendezVous(LocalDate dateRendezVous, StatutRendezVous statut) {
+        this.dateRendezVous = dateRendezVous;
+        this.statut = statut;
+    }
+
+    public RendezVous() {
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
+    @JsonIgnore
+    private Patient patient;
+
+    @ManyToOne
+    @JoinColumn(name = "medecin_id")
+    @JsonIgnore
+    private Medecin medecin;
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Entity\User.java =====
+
+package org.HealthCare.healthcare.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.HealthCare.healthcare.enums.RoleUser;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+public class User implements UserDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String username;
+    private String email;
+    @Enumerated(EnumType.STRING)
+    private RoleUser role;
+    private String password;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Patient patient;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Medecin medecin;
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
+    public User() {
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(() -> "ROLE_" + role.name());
+    }
+
+
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\enums\RoleUser.java =====
+
+package org.HealthCare.healthcare.enums;
+
+public enum RoleUser {
+    ADMIN,
+    MEDECIN,
+    PATIENT
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\enums\StatutRendezVous.java =====
+
+package org.HealthCare.healthcare.enums;
+
+public enum StatutRendezVous {
+    EN_ATTENTE,
+    CONFIRME,
+    ANNULE,
+    TERMINE
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Exception\GlobalExceptionHandler.java =====
+
+package org.HealthCare.healthcare.Exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleBadCredentials(){
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Email ou mot de passe incorrect");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception ex){
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ex.getMessage());
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Mapper\DossierMedicalMapper.java =====
+
+package org.HealthCare.healthcare.Mapper;
+
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedicalDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.ResponseDossierMedicalDTO;
+import org.HealthCare.healthcare.Entity.DossierMedical;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+@Mapper(componentModel = "spring")
+public interface DossierMedicalMapper {
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "patient" , ignore = true)
+    DossierMedical toEntity(RequestDossierMedicalDTO dto);
+    @Mapping(source = "patient.id" , target = "patientId")
+    ResponseDossierMedicalDTO toResponse(DossierMedical dossierMedical);
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Mapper\MedecinMapper.java =====
+
+package org.HealthCare.healthcare.Mapper;
+
+import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.RequestMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
+import org.HealthCare.healthcare.Entity.Medecin;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+@Mapper(componentModel = "spring")
+public interface MedecinMapper {
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "rendezVous" , ignore = true)
+    Medecin toEntity(RequestMedecinDTO dto);
+    Medecin toEntity(PutMedecinDTO dto);
+    @Mapping(target = "userId", source = "user.id")
+    ResponseMedecinDTO toResponseDTO(Medecin medecin);
+
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "rendezVous" , ignore = true)
+    void updateMedecin(PutMedecinDTO dto , @MappingTarget Medecin medecin);
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Mapper\PatientMapper.java =====
+
+package org.HealthCare.healthcare.Mapper;
+import org.HealthCare.healthcare.DTO.patient.PutPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.RequestPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.ResponsePatientDTO;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+@Mapper(componentModel = "spring")
+public interface PatientMapper {
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "rendezVous" , ignore = true)
+    @Mapping(target = "dossierMedical" , ignore = true)
+    Patient toEntity(RequestPatientDTO dto);
+    @Mapping(target = "userId", source = "user.id")
+    ResponsePatientDTO toResponseDTO(Patient patient);
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "rendezVous" , ignore = true)
+    @Mapping(target = "dossierMedical" , ignore = true)
+    void updatePatient(PutPatientDTO dto , @MappingTarget Patient patient);
+
+
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Mapper\RendezVousMapper.java =====
+
+package org.HealthCare.healthcare.Mapper;
+
+import org.HealthCare.healthcare.DTO.patient.medecin.CountRdvDeMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
+import org.HealthCare.healthcare.Entity.RendezVous;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface RendezVousMapper {
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "patient" , ignore = true)
+    @Mapping(target = "medecin" , ignore = true)
+    RendezVous toEntity(RequestRendezVousDTO dto);
+    @Mapping(source = "patient.id" , target = "patientId")
+    @Mapping(source = "medecin.id" , target = "medecinId")
+    ResponseRendezVousDTO toResponseDTO(RendezVous rendezVous);
+    CountRdvDeMedecinDTO toResponseList(RendezVous rendezVous);
+    List<ResponseRendezVousDTO> toResponseDTOList(List<RendezVous> rendezVous);
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "patient" , ignore = true)
+    @Mapping(target = "medecin" , ignore = true)
+    void updateRendeVous(PutRendezVousDTO dto , @MappingTarget RendezVous rendezVous);
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Repository\DossierMedicalRepository.java =====
+
+package org.HealthCare.healthcare.Repository;
+
+import org.HealthCare.healthcare.Entity.DossierMedical;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Optional;
+
+@Repository
+public interface DossierMedicalRepository extends JpaRepository<DossierMedical , Long> {
+    @EntityGraph(attributePaths = "patient")
+    Page<DossierMedical> findAll(Pageable pageable);
+
+    @EntityGraph(attributePaths = "patient")
+    Optional<DossierMedical> findByPatient_Id(Long patientId);
+
+    @EntityGraph(attributePaths = "patient")
+    Optional<DossierMedical> findById(Long id);
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Repository\MedecinRepository.java =====
+
+package org.HealthCare.healthcare.Repository;
+
+import org.HealthCare.healthcare.Entity.Medecin;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface MedecinRepository extends JpaRepository<Medecin , Long> {
+    Page<Medecin> findBySpecialiteContaining(String specialite, Pageable pageable);
+
+    Page<Medecin> findAll(Pageable pageable);
+
+    Page<Medecin> findMedecinByTelephone(Long tele , Pageable pageable);
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Repository\PatientRepository.java =====
+
+package org.HealthCare.healthcare.Repository;
+
+import org.HealthCare.healthcare.Entity.Patient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import org.springframework.data.domain.Pageable;
+
+import java.util.Optional;
+
+@Repository
+public interface PatientRepository extends JpaRepository<Patient, Long> {
+    @Query("SELECT p FROM Patient p WHERE p.nom LIKE %:nom%")
+    Page<Patient> recuperPatientbyNom(String nom, Pageable pageable);
+
+    @EntityGraph(attributePaths = "rendezVous")
+    @Query("SELECT p FROM Patient p WHERE p.id = :id")
+    Optional<Patient> findByIdWithRendezVous(@Param("id") Long id);
+
+    Page<Patient> findAll(Pageable pageable);
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Repository\RendezVousRepository.java =====
+
+package org.HealthCare.healthcare.Repository;
+
+import org.HealthCare.healthcare.Entity.RendezVous;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface RendezVousRepository extends JpaRepository<RendezVous , Long> {
+    Page<RendezVous> findByPatient_Nom(String nom, Pageable pageable);
+
+    Page<RendezVous> findByMedecin_Nom(String nom, Pageable pageable);
+
+    Page<RendezVous> findByPatient_Id(Long id, Pageable pageable);
+    List<RendezVous> findByPatient_Id(Long id);
+
+    Page<RendezVous> findByMedecin_Id(Long id, Pageable pageable);
+
+    Page<RendezVous> findByMedecin_IdAndDateRendezVous(Long medecinId, java.time.LocalDate date, Pageable pageable);
+
+    Page<RendezVous> findByStatut(StatutRendezVous statut, Pageable pageable);
+
+    Page<RendezVous> findAll(Pageable pageable);
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Repository\UserRepository.java =====
+
+package org.HealthCare.healthcare.Repository;
+
+import org.HealthCare.healthcare.Entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    User findByEmail(String email);
+
+    User findByUsername(String username);
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Security\AuthEntryPointJwt.java =====
+
+package org.HealthCare.healthcare.Security;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+public class AuthEntryPointJwt implements AuthenticationEntryPoint {
+
+    @Override
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException)
+            throws IOException, ServletException {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED , "401 Unauthorized");
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Security\AuthTokenFilter.java =====
+
+package org.HealthCare.healthcare.Security;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+@Component
+@Slf4j
+public class AuthTokenFilter extends OncePerRequestFilter {
+
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
+
+    public AuthTokenFilter(
+            JwtUtil jwtUtil,
+            UserDetailsService userDetailsService
+    ) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+    }
+
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+
+            if (jwtUtil.validateJwtToken(token)) {
+                String username = jwtUtil.getUserFromToken(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        }
+        filterChain.doFilter(request, response);
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Security\JwtUtil.java =====
+
+package org.HealthCare.healthcare.Security;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import java.util.Date;
+
+@Component
+@Slf4j
+public class JwtUtil {
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+    @Value("${jwt.expiration}")
+    private int jwtExpiration;
+
+
+    public String genereteToken(String email, String role){
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
+                .signWith(SignatureAlgorithm.HS256 , jwtSecret)
+                .compact();
+    }
+
+    public String getUserFromToken(String token){
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .build()
+                .parseClaimsJws(token)
+                .getPayload()
+                .getSubject();
+    }
+
+    public boolean validateJwtToken(String token){
+        try{
+            Jwts.parser().setSigningKey(jwtSecret).build().parseClaimsJws(token);
+            return true;
+        }catch (Exception e){
+            log.error("JWT validation error: {}" , e.getMessage());
+        }
+        return false;
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Security\SecurityConfig.java =====
+
+package org.HealthCare.healthcare.Security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
+
+    private UserDetailsService userDetailsService;
+    private AuthTokenFilter authTokenFilter;
+
+    public SecurityConfig(UserDetailsService userDetailsService , AuthTokenFilter authTokenFilter){
+        this.userDetailsService = userDetailsService;
+        this.authTokenFilter = authTokenFilter;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                );
+
+        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager
+            (AuthenticationConfiguration authenticationConfiguration) throws Exception{
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Service\AuthService.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import lombok.extern.slf4j.Slf4j;
+import org.HealthCare.healthcare.DTO.patient.auth.AuthResponse;
+import org.HealthCare.healthcare.DTO.patient.auth.LoginRequest;
+import org.HealthCare.healthcare.DTO.patient.auth.RegistreRequest;
+import org.HealthCare.healthcare.Entity.Medecin;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Entity.User;
+import org.HealthCare.healthcare.Repository.UserRepository;
+import org.HealthCare.healthcare.Security.JwtUtil;
+import org.HealthCare.healthcare.enums.RoleUser;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@Slf4j
+public class AuthService {
+    private final UserRepository repo;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+
+    public AuthService(UserRepository repo, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+        this.repo = repo;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
+    }
+
+    public AuthResponse register(RegistreRequest request) {
+        User existing = repo.findByEmail(request.getEmail());
+
+        if (existing != null) {
+            log.warn("Registration failed: Email {} already exists", request.getEmail());
+            throw new RuntimeException("Email dÃ©jÃ  utilisÃ©");
+        }
+
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
+
+        if (request.getRole() == RoleUser.PATIENT) {
+            Patient patient = new Patient();
+            patient.setNom(user.getUsername());
+            patient.setUser(user);
+            user.setPatient(patient);
+        } else if (request.getRole() == RoleUser.MEDECIN) {
+            Medecin medecin = new Medecin();
+            medecin.setNom(user.getUsername());
+            medecin.setEmail(user.getEmail());
+            medecin.setUser(user);
+            user.setMedecin(medecin);
+        }
+
+        repo.save(user);
+
+        String token = jwtUtil.genereteToken(user.getEmail(), user.getRole().name());
+        return new AuthResponse(token);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        try {
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+
+            authenticationManager.authenticate(authToken);
+
+            User user = repo.findByEmail(request.getEmail());
+            String token = jwtUtil.genereteToken(request.getEmail(), user.getRole().name());
+            return new AuthResponse(token);
+        } catch (Exception e) {
+            log.error("Login failed for {}: {}", request.getEmail(), e.getMessage());
+            throw e;
+        }
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Service\CustomUserDetailsService.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.Entity.User;
+import org.HealthCare.healthcare.Repository.UserRepository;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+    private UserRepository userRepository;
+
+    public CustomUserDetailsService(UserRepository userRepository){
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user == null){
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+        return user;
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Service\DossierMedicalService.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.AddDiagnosticDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.AddObservationDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedicalDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.ResponseDossierMedicalDTO;
+import org.HealthCare.healthcare.Entity.DossierMedical;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Mapper.DossierMedicalMapper;
+import org.HealthCare.healthcare.Repository.DossierMedicalRepository;
+import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
+import java.util.List;
+
+@Service
+public class DossierMedicalService {
+    private DossierMedicalRepository dossierMedicalRepository;
+    private DossierMedicalMapper dossierMedicalMapper;
+    private PatientRepository patientRepository;
+    private PdfGeneratorService pdfGeneratorService;
+
+    public DossierMedicalService(DossierMedicalRepository dossierMedicalRepository , DossierMedicalMapper dossierMedicalMapper , PatientRepository patientRepository, PdfGeneratorService pdfGeneratorService){
+        this.dossierMedicalRepository = dossierMedicalRepository;
+        this.dossierMedicalMapper = dossierMedicalMapper;
+        this.patientRepository = patientRepository;
+        this.pdfGeneratorService = pdfGeneratorService;
+    }
+
+    public byte[] exportDossierToPdf(Long id) {
+        DossierMedical dossier = getDossierOrThrow(id);
+        return pdfGeneratorService.generateDossierMedicalPdf(dossier);
+    }
+
+    @CacheEvict(value = "dossiers", allEntries = true)
+    public ResponseDossierMedicalDTO createDossierMedical(RequestDossierMedicalDTO dto){
+        Patient patient = patientRepository.findById(dto.getPatientId())
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        DossierMedical dossierMedicalMapperEntity = dossierMedicalMapper.toEntity(dto);
+        dossierMedicalMapperEntity.setDateCreation(LocalDate.now());
+        dossierMedicalMapperEntity.setPatient(patient);
+        DossierMedical dossierMedical = dossierMedicalRepository.save(dossierMedicalMapperEntity);
+        return dossierMedicalMapper.toResponse(dossierMedical);
+    }
+
+    @CacheEvict(value = "dossiers", allEntries = true)
+    public ResponseDossierMedicalDTO addDiagnostic(Long id , AddDiagnosticDTO dto){
+        DossierMedical dejaExists = getDossierOrThrow(id);
+        dejaExists.setDiagnostic(dto.getDiagnostic());
+        DossierMedical dossierMedical = dossierMedicalRepository.save(dejaExists);
+        return dossierMedicalMapper.toResponse(dossierMedical);
+    }
+
+    @CacheEvict(value = "dossiers", allEntries = true)
+    public ResponseDossierMedicalDTO addObservation(Long id , AddObservationDTO dto){
+        DossierMedical dejaExists = getDossierOrThrow(id);
+        dejaExists.setObservation(dto.getObservation());
+        DossierMedical dossierMedical = dossierMedicalRepository.save(dejaExists);
+        return dossierMedicalMapper.toResponse(dossierMedical);
+    }
+
+    @Cacheable(value = "dossiers", key = "#id")
+    public ResponseDossierMedicalDTO getDossierById(Long id){
+        DossierMedical dossierMedical = getDossierOrThrow(id);
+        return dossierMedicalMapper.toResponse(dossierMedical);
+    }
+
+    public DossierMedical getDossierOrThrow(Long id){
+        return dossierMedicalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dossier not found"));
+    }
+
+    @Cacheable(value = "dossiers", key = "#pageable.pageNumber")
+    public Page<ResponseDossierMedicalDTO> getAllDossierMedical(Pageable pageable){
+        Page<DossierMedical> page = dossierMedicalRepository.findAll(pageable);
+        return page.map(dossierMedicalMapper::toResponse);
+    }
+
+    @Cacheable(value = "dossiers", key = "'patient-' + #patientId")
+    public ResponseDossierMedicalDTO getDossierByPatientId(Long patientId) {
+        DossierMedical dossier = dossierMedicalRepository.findByPatient_Id(patientId)
+                .orElseThrow(() -> new RuntimeException("Dossier medical introuvable"));
+        return dossierMedicalMapper.toResponse(dossier);
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Service\MedecinService.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.RequestMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
+import org.HealthCare.healthcare.Entity.Medecin;
+import org.HealthCare.healthcare.Mapper.MedecinMapper;
+import org.HealthCare.healthcare.Repository.MedecinRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
+import org.springframework.data.domain.Pageable;
+import java.util.List;
+
+@Service
+public class MedecinService {
+    private MedecinRepository medecinRepository;
+    private MedecinMapper medecinMapper;
+
+    public MedecinService(MedecinRepository medecinRepository , MedecinMapper medecinMapper){
+        this.medecinRepository = medecinRepository;
+        this.medecinMapper = medecinMapper;
+    }
+
+    @CacheEvict(value = "medecins", allEntries = true)
+    public ResponseMedecinDTO addMedecin(RequestMedecinDTO dto){
+        Medecin medecinMapperEntity = medecinMapper.toEntity(dto);
+        Medecin medecin = medecinRepository.save(medecinMapperEntity);
+        return medecinMapper.toResponseDTO(medecin);
+    }
+
+    @CacheEvict(value = "medecins", allEntries = true)
+    public ResponseMedecinDTO updateMedecin(Long id , PutMedecinDTO dto){
+        Medecin medecinDejaExists = medecinRepository.findById(id).
+                orElseThrow(()-> new RuntimeException("Medecin introuvable"));
+        medecinMapper.updateMedecin(dto , medecinDejaExists);
+        Medecin medecin = medecinRepository.save(medecinDejaExists);
+        return medecinMapper.toResponseDTO(medecin);
+    }
+
+    @CacheEvict(value = "medecins", allEntries = true)
+    public void deleteMedecin(Long id){
+        medecinRepository.deleteById(id);
+    }
+
+    @Cacheable(value = "medecins", key = "#id")
+    public ResponseMedecinDTO getMedecinById(Long id) {
+        Medecin medecin = medecinRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Medecin introuvable"));
+        return medecinMapper.toResponseDTO(medecin);
+    }
+
+    @Cacheable(value = "medecins", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+    public Page<ResponseMedecinDTO> getAllMedecin(Pageable pageable){
+        Page<Medecin> page = medecinRepository.findAll(pageable);
+                return page.map(medecinMapper::toResponseDTO);
+
+    }
+
+    @Cacheable(value = "medecins", key = "#tele + '-' + #pageable.pageNumber")
+    public Page<ResponseMedecinDTO> getPatientByTele(Long tele , Pageable pageable){
+        Page<Medecin> page = medecinRepository.findMedecinByTelephone(tele , pageable);
+        return page.map(medecinMapper::toResponseDTO);
+    }
+
+    @Cacheable(value = "medecins", key = "#specialite + '-' + #pageable.pageNumber")
+    public Page<ResponseMedecinDTO> searchMedecinBySpecialite(String specialite, Pageable pageable) {
+        Page<Medecin> medecins = medecinRepository.findBySpecialiteContaining(specialite, pageable);
+        return medecins.map(medecinMapper::toResponseDTO);
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Service\PatientService.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.DTO.patient.PutPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.RequestPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.ResponsePatientDTO;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Mapper.PatientMapper;
+import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PatientService {
+    private PatientRepository patientRepository;
+    private PatientMapper patientMapper;
+    private PdfGeneratorService pdfGeneratorService;
+
+    public PatientService(PatientRepository patientRepository , PatientMapper patientMapper, PdfGeneratorService pdfGeneratorService){
+        this.patientRepository = patientRepository;
+        this.patientMapper = patientMapper;
+        this.pdfGeneratorService = pdfGeneratorService;
+    }
+
+    public byte[] generatePatientReport(Long id) {
+        Patient patient = patientRepository.findByIdWithRendezVous(id)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        String content = "Rapport pour le patient: " + patient.getNom() + " " + patient.getPrenom() + "\n" +
+                "TÃ©lÃ©phone: " + patient.getTelephone() + "\n" +
+                "Date de naissance: " + patient.getDateNaissance() + "\n" +
+                "Nombre de rendez-vous: " + (patient.getRendezVous() != null ? patient.getRendezVous().size() : 0);
+        return pdfGeneratorService.generateSimpleReportPdf(content);
+    }
+
+    @CacheEvict(value = "patients", allEntries = true)
+    public ResponsePatientDTO addPatient(RequestPatientDTO dto){
+        Patient patientMapperEntity = patientMapper.toEntity(dto);
+        Patient patient = patientRepository.save(patientMapperEntity);
+        return patientMapper.toResponseDTO(patient);
+    }
+
+    @CacheEvict(value = "patients", allEntries = true)
+    public ResponsePatientDTO updatePatient(Long id , PutPatientDTO dto){
+        Patient patientDejaExists = patientRepository.findById(id).
+                orElseThrow(()-> new RuntimeException("Patient introuvable"));
+        patientMapper.updatePatient(dto , patientDejaExists);
+        Patient patient = patientRepository.save(patientDejaExists);
+        return patientMapper.toResponseDTO(patient);
+    }
+
+    @CacheEvict(value = "patients", allEntries = true)
+    public void deletePatient(Long id){
+        patientRepository.deleteById(id);
+    }
+
+    @Cacheable(value = "patients", key = "'all-' + #pageable.pageNumber")
+    public Page<ResponsePatientDTO> getAllPatients(Pageable pageable) {
+           Page < Patient > page = patientRepository.findAll(pageable);
+           return page.map(patientMapper::toResponseDTO);
+    }
+
+    @Cacheable(value = "patients", key = "#id")
+    public ResponsePatientDTO getPatientById(Long id){
+        Patient patient = patientRepository.findById(id).orElseThrow(()-> new RuntimeException("Patient introuvable"));
+        return patientMapper.toResponseDTO(patient);
+
+    }
+
+    @Cacheable(value = "patients", key = "'search-' + #nom + '-' + #pageable.pageNumber")
+    public Page<ResponsePatientDTO> searchPatientByNom(String nom, Pageable pageable) {
+        Page<Patient> patients = patientRepository.recuperPatientbyNom(nom, pageable);
+        return patients.map(patientMapper::toResponseDTO);
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Service\PdfGeneratorService.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import org.HealthCare.healthcare.Entity.DossierMedical;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Entity.RendezVous;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+
+@Service
+public class PdfGeneratorService {
+
+    public byte[] generateDossierMedicalPdf(DossierMedical dossier) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, out);
+
+        document.open();
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+        Paragraph title = new Paragraph("Dossier MÃ©dical", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+
+        document.add(new Paragraph(" ")); // Spacer
+
+        Patient patient = dossier.getPatient();
+        if (patient != null) {
+            document.add(new Paragraph("Patient: " + patient.getNom() + " " + patient.getPrenom()));
+            document.add(new Paragraph("TÃ©lÃ©phone: " + patient.getTelephone()));
+            document.add(new Paragraph("Date de naissance: " + patient.getDateNaissance()));
+        }
+
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph("Date de crÃ©ation: " + dossier.getDateCreation()));
+        document.add(new Paragraph("Diagnostic:"));
+        document.add(new Paragraph(dossier.getDiagnostic()));
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph("Observation:"));
+        document.add(new Paragraph(dossier.getObservation()));
+
+        document.close();
+        return out.toByteArray();
+    }
+
+    public byte[] generateRendezVousListPdf(Patient patient, List<RendezVous> rendezVousList) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, out);
+
+        document.open();
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+        Paragraph title = new Paragraph("Liste des Rendez-vous", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph("Patient: " + patient.getNom() + " " + patient.getPrenom()));
+        document.add(new Paragraph(" "));
+
+        PdfPTable table = new PdfPTable(3);
+        table.setWidthPercentage(100);
+        table.addCell("Date");
+        table.addCell("MÃ©decin");
+        table.addCell("Statut");
+
+        for (RendezVous rdv : rendezVousList) {
+            table.addCell(rdv.getDateRendezVous().toString());
+            table.addCell(rdv.getMedecin() != null ? rdv.getMedecin().getNom() : "N/A");
+            table.addCell(rdv.getStatut().toString());
+        }
+
+        document.add(table);
+        document.close();
+        return out.toByteArray();
+    }
+
+    public byte[] generateSimpleReportPdf(String content) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, out);
+
+        document.open();
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18);
+        Paragraph title = new Paragraph("Rapport MÃ©dical", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph(content));
+
+        document.close();
+        return out.toByteArray();
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Service\RendezVousService.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
+import org.HealthCare.healthcare.Entity.Medecin;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Entity.RendezVous;
+import org.HealthCare.healthcare.Mapper.RendezVousMapper;
+import org.HealthCare.healthcare.Repository.MedecinRepository;
+import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.HealthCare.healthcare.Repository.RendezVousRepository;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class RendezVousService {
+    private RendezVousRepository rendezVousRepository;
+    private RendezVousMapper rendezVousMapper;
+    private PatientRepository patientRepository;
+    private MedecinRepository medecinRepository;
+    private PdfGeneratorService pdfGeneratorService;
+
+    public RendezVousService(RendezVousRepository rendezVousRepository , RendezVousMapper rendezVousMapper , PatientRepository patientRepository , MedecinRepository medecinRepository, PdfGeneratorService pdfGeneratorService){
+        this.rendezVousRepository = rendezVousRepository;
+        this.rendezVousMapper = rendezVousMapper;
+        this.patientRepository = patientRepository;
+        this.medecinRepository = medecinRepository;
+        this.pdfGeneratorService = pdfGeneratorService;
+    }
+
+    public byte[] exportRendezVousByPatientToPdf(Long patientId) {
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        List<RendezVous> rendezVousList = rendezVousRepository.findByPatient_Id(patientId);
+        return pdfGeneratorService.generateRendezVousListPdf(patient, rendezVousList);
+    }
+
+    @CacheEvict(value = "rendezvous", allEntries = true)
+    public ResponseRendezVousDTO createRendezVous(RequestRendezVousDTO dto){
+        Patient patient = patientRepository.findById(dto.getPatientId()).
+                orElseThrow(()-> new RuntimeException("Patient not found"));
+        Medecin medecin = medecinRepository.findById(dto.getMedecinId()).
+                orElseThrow(()-> new RuntimeException("Medecin not found"));
+        RendezVous rendezVousMapperEntity = rendezVousMapper.toEntity(dto);
+        rendezVousMapperEntity.setPatient(patient);
+        rendezVousMapperEntity.setMedecin(medecin);
+        RendezVous rendezVous = rendezVousRepository.save(rendezVousMapperEntity);
+        return rendezVousMapper.toResponseDTO(rendezVous);
+    }
+
+    @CacheEvict(value = "rendezvous", allEntries = true)
+    public ResponseRendezVousDTO updateRendezVous(Long id , PutRendezVousDTO dto){
+        RendezVous dejaExists = rendezVousRepository.findById(id).
+                orElseThrow(()-> new RuntimeException("Rendez Vous not found"));
+        rendezVousMapper.updateRendeVous(dto , dejaExists);
+        RendezVous rendezVous = rendezVousRepository.save(dejaExists);
+        return rendezVousMapper.toResponseDTO(rendezVous);
+    }
+
+    @CacheEvict(value = "rendezvous", allEntries = true)
+    public ResponseRendezVousDTO annulerRendezVous(Long id){
+        RendezVous dejaExists = rendezVousRepository.findById(id).
+                orElseThrow(()-> new RuntimeException("Rendez Vous not found"));
+        dejaExists.setStatut(StatutRendezVous.ANNULE);
+        RendezVous rendezVous = rendezVousRepository.save(dejaExists);
+        return rendezVousMapper.toResponseDTO(rendezVous);
+    }
+
+    @Cacheable(value = "rendezvous", key = "'all-' + #pageable.pageNumber")
+    public Page<ResponseRendezVousDTO> getAllRendezVous(Pageable pageable){
+        Page<RendezVous> page = rendezVousRepository.findAll(pageable);
+        return page.map(rendezVousMapper::toResponseDTO);
+    }
+
+    @Cacheable(value = "rendezvous", key = "'patient-' + #nom + '-' + #pageable.pageNumber")
+    public Page<ResponseRendezVousDTO> findRendezVousPatientByNom(String nom, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByPatient_Nom(nom, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
+
+    @Cacheable(value = "rendezvous", key = "'medecin-' + #nom + '-' + #pageable.pageNumber")
+    public Page<ResponseRendezVousDTO> findRendezVousMedecinByNom(String nom, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Nom(nom, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
+
+    @Cacheable(value = "rendezvous", key = "'medecin-date-' + #id + '-' + #date + '-' + #pageable.pageNumber")
+    public Page<ResponseRendezVousDTO> recuperDesRendezVousDeMedecinByDate(Long id, java.time.LocalDate date, Pageable pageable) {
+        Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_IdAndDateRendezVous(id, date, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
+
+    @Cacheable(value = "rendezvous", key = "'statut-' + #statut + '-' + #pageable.pageNumber")
+    public Page<ResponseRendezVousDTO> afficherRdvParStatut(StatutRendezVous statut, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByStatut(statut, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
+
+    @Cacheable(value = "rendezvous", key = "'patient-id-' + #id + '-' + #pageable.pageNumber")
+    public Page<ResponseRendezVousDTO> findRendezVousPatientById(Long id, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByPatient_Id(id, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
+
+    @Cacheable(value = "rendezvous", key = "'medecin-id-' + #id + '-' + #pageable.pageNumber")
+    public Page<ResponseRendezVousDTO> findRendezVousMedecinById(Long id, Pageable pageable){
+        Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Id(id, pageable);
+        return rendezVous.map(rendezVousMapper::toResponseDTO);
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\Swagger\SwaggerConfig.java =====
+
+package org.HealthCare.healthcare.Swagger;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI fleetFlowOpenAPI() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("HealthCare API")
+                        .description("API pour la gestion des patient, medecin et dossierMedical et rendezVous")
+                        .version("1.0.0"));
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\java\org\HealthCare\healthcare\HealthCareApplication.java =====
+
+package org.HealthCare.healthcare;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+
+@SpringBootApplication
+@EnableCaching
+public class HealthCareApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(HealthCareApplication.class, args);
+    }
+
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\main\resources\application.properties =====
+
+spring.application.name=HealthCare
+server.port=${PORT:8080}
+
+spring.datasource.url=${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.hikari.maximum-pool-size=${SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE:3}
+spring.datasource.hikari.minimum-idle=${SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE:0}
+spring.datasource.hikari.connection-timeout=${SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT:30000}
+spring.datasource.hikari.validation-timeout=${SPRING_DATASOURCE_HIKARI_VALIDATION_TIMEOUT:5000}
+spring.datasource.hikari.max-lifetime=${SPRING_DATASOURCE_HIKARI_MAX_LIFETIME:1800000}
+spring.datasource.hikari.idle-timeout=${SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT:600000}
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.flyway.enabled=true
+logging.level.org.springframework.security=DEBUG
+server.error.include-message=always
+server.error.include-binding-errors=always
+
+
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+
+jwt.secret=${JWT_SECRET:MaCleSecreteSuperLongueEtSecurisee1234567890!}
+jwt.expiration=${JWT_EXPIRATION:86400000}
+
+spring.data.redis.host=${SPRING_DATA_REDIS_HOST:localhost}
+spring.data.redis.port=${SPRING_DATA_REDIS_PORT:6379}
+spring.data.redis.password=${SPRING_DATA_REDIS_PASSWORD:}
+spring.data.redis.ssl.enabled=${SPRING_DATA_REDIS_SSL_ENABLED:false}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\test\java\org\HealthCare\healthcare\Service\DossierMedicalServiceTest.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedicalDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.ResponseDossierMedicalDTO;
+import org.HealthCare.healthcare.Entity.DossierMedical;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Mapper.DossierMedicalMapper;
+import org.HealthCare.healthcare.Repository.DossierMedicalRepository;
+import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class DossierMedicalServiceTest {
+
+    @Mock
+    private DossierMedicalRepository dossierMedicalRepository;
+
+    @Mock
+    private DossierMedicalMapper dossierMedicalMapper;
+
+    @Mock
+    private PatientRepository patientRepository;
+
+    @InjectMocks
+    private DossierMedicalService dossierMedicalService;
+
+    @Test
+    void createDossierMedical() {
+        String observation = "test";
+        RequestDossierMedicalDTO dossierMedicalDTO = new RequestDossierMedicalDTO();
+        dossierMedicalDTO.setObservation(observation);
+        dossierMedicalDTO.setPatientId(1L);
+
+        Patient patient = new Patient();
+        patient.setId(1L);
+
+        DossierMedical dossierMedical = new DossierMedical();
+        dossierMedical.setObservation(observation);
+
+        ResponseDossierMedicalDTO responseDossierMedicalDTO = new ResponseDossierMedicalDTO();
+        responseDossierMedicalDTO.setObservation(observation);
+
+        when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+        when(dossierMedicalMapper.toEntity(dossierMedicalDTO)).thenReturn(dossierMedical);
+        when(dossierMedicalRepository.save(dossierMedical)).thenReturn(dossierMedical);
+        when(dossierMedicalMapper.toResponse(dossierMedical)).thenReturn(responseDossierMedicalDTO);
+
+        ResponseDossierMedicalDTO responseDossierMedicalDTO1 = dossierMedicalService.createDossierMedical(dossierMedicalDTO);
+        assertNotNull(responseDossierMedicalDTO1);
+        assertEquals(observation , responseDossierMedicalDTO1.getObservation());
+    }
+
+    @Test
+    void getDossierById() {
+        Long dossier_id = 1L;
+        DossierMedical dossierMedical = new DossierMedical();
+        dossierMedical.setId(dossier_id);
+
+        ResponseDossierMedicalDTO responseDossierMedicalDTO = new ResponseDossierMedicalDTO();
+        responseDossierMedicalDTO.setId(dossier_id);
+
+        when(dossierMedicalRepository.findById(dossier_id)).thenReturn(Optional.of(dossierMedical));
+        when(dossierMedicalMapper.toResponse(dossierMedical)).thenReturn(responseDossierMedicalDTO);
+
+        ResponseDossierMedicalDTO responseDossierMedicalDTO1 = dossierMedicalService.getDossierById(dossier_id);
+
+        assertNotNull(responseDossierMedicalDTO1);
+        assertEquals(dossier_id , responseDossierMedicalDTO1.getId());
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\test\java\org\HealthCare\healthcare\Service\MedecinServiceTest.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
+import org.HealthCare.healthcare.Entity.Medecin;
+import org.HealthCare.healthcare.Mapper.MedecinMapper;
+import org.HealthCare.healthcare.Repository.MedecinRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
+
+
+@ExtendWith(MockitoExtension.class)
+class MedecinServiceTest {
+
+    @Mock
+    private MedecinRepository medecinRepository;
+
+    @Mock
+    private MedecinMapper medecinMapper;
+
+    @InjectMocks
+    private MedecinService medecinService;
+
+    @Test
+    void updateMedecin() {
+        Long id = 1L;
+        String Newnom = "messi";
+        PutMedecinDTO putMedecinDTO = new PutMedecinDTO();
+        putMedecinDTO.setNom(Newnom);
+        Medecin medecin = new Medecin();
+        medecin.setId(id);
+        medecin.setNom("rida");
+        ResponseMedecinDTO responseMedecinDTO = new ResponseMedecinDTO();
+        responseMedecinDTO.setNom(Newnom);
+
+        when(medecinRepository.findById(id)).thenReturn(Optional.of(medecin));
+        when(medecinRepository.save(medecin)).thenReturn(medecin);
+        when(medecinMapper.toResponseDTO(medecin)).thenReturn(responseMedecinDTO);
+
+        ResponseMedecinDTO medecinDTO = medecinService.updateMedecin(id , putMedecinDTO);
+        assertNotNull(medecinDTO);
+        assertEquals(Newnom, medecinDTO.getNom());
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\test\java\org\HealthCare\healthcare\Service\PatientServiceTest.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.DTO.patient.RequestPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.ResponsePatientDTO;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Mapper.PatientMapper;
+import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.when;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
+class PatientServiceTest {
+
+    @Mock
+    private PatientRepository patientRepository;
+
+    @Mock
+    private PatientMapper patientMapper;
+
+    @InjectMocks
+    private PatientService patientService;
+
+    @Test
+    void addPatient() {
+        String nom = "rida";
+        RequestPatientDTO patientDTO = new RequestPatientDTO();
+        patientDTO.setNom(nom);
+        Patient patient = new Patient();
+        patient.setNom(nom);
+        ResponsePatientDTO responsePatientDTO = new ResponsePatientDTO();
+        responsePatientDTO.setNom(nom);
+
+        when(patientMapper.toEntity(patientDTO)).thenReturn(patient);
+        when(patientRepository.save(patient)).thenReturn(patient);
+        when(patientMapper.toResponseDTO(patient)).thenReturn(responsePatientDTO);
+
+        ResponsePatientDTO patientDTO1 = patientService.addPatient(patientDTO);
+        assertNotNull(patientDTO1);
+        assertEquals("rida" , patientDTO1.getNom());
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\test\java\org\HealthCare\healthcare\Service\RendezVousServiceTest.java =====
+
+package org.HealthCare.healthcare.Service;
+
+import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Entity.RendezVous;
+import org.HealthCare.healthcare.Mapper.RendezVousMapper;
+import org.HealthCare.healthcare.Repository.RendezVousRepository;
+import org.HealthCare.healthcare.enums.StatutRendezVous;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class RendezVousServiceTest {
+
+    @Mock
+    private RendezVousRepository rendezVousRepository;
+
+    @Mock
+    private RendezVousMapper rendezVousMapper;
+
+    @InjectMocks
+    private RendezVousService rendezVousService;
+
+    @Test
+    void annulerRendezVous() {
+        Long id = 1L;
+        RendezVous rendezVous = new RendezVous();
+        rendezVous.setId(id);
+        rendezVous.setStatut(StatutRendezVous.EN_ATTENTE);
+
+        RendezVous rendezVous1 = new RendezVous();
+        rendezVous1.setId(id);
+        rendezVous1.setStatut(StatutRendezVous.ANNULE);
+
+        ResponseRendezVousDTO responseRendezVousDTO = new ResponseRendezVousDTO();
+        responseRendezVousDTO.setId(id);
+
+        when(rendezVousRepository.findById(id)).thenReturn(Optional.of(rendezVous));
+        when(rendezVousRepository.save(rendezVous)).thenReturn(rendezVous1);
+        when(rendezVousMapper.toResponseDTO(rendezVous1)).thenReturn(responseRendezVousDTO);
+
+        ResponseRendezVousDTO rendezVousDTO = rendezVousService.annulerRendezVous(id);
+
+        assertNotNull(rendezVousDTO);
+        assertEquals(StatutRendezVous.ANNULE , rendezVous.getStatut());
+    }
+
+    @Test
+    void getAllRendezVous() {
+        RendezVous rendezVous = new RendezVous();
+        RendezVous rendezVous1 = new RendezVous();
+
+        List<RendezVous> rendezVousList = List.of(rendezVous , rendezVous1);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<RendezVous> page = new PageImpl<>(rendezVousList, pageable, rendezVousList.size());
+
+        ResponseRendezVousDTO responseRendezVousDTO = new ResponseRendezVousDTO();
+        responseRendezVousDTO.setId(1L);
+
+        ResponseRendezVousDTO responseRendezVousDTO1 = new ResponseRendezVousDTO();
+        responseRendezVousDTO1.setId(1L);
+
+        when(rendezVousRepository.findAll(pageable)).thenReturn(page);
+        when(rendezVousMapper.toResponseDTO(rendezVous)).thenReturn(responseRendezVousDTO);
+        when(rendezVousMapper.toResponseDTO(rendezVous1)).thenReturn(responseRendezVousDTO1);
+
+        Page<ResponseRendezVousDTO> rendezVousDTO = rendezVousService.getAllRendezVous(pageable);
+
+        assertNotNull(rendezVousDTO);
+        assertEquals(2 , rendezVousDTO.getContent().size());
+    }
+
+    @Test
+    void findPatientByNom() {
+        String nom = "rida";
+        Patient patient = new Patient();
+        RendezVous rendezVous = new RendezVous();
+        patient.setNom(nom);
+        rendezVous.setPatient(patient);
+
+        Pageable pageable = PageRequest.of(0, 10);
+        List<RendezVous> list = List.of(rendezVous);
+        Page<RendezVous> page = new PageImpl<>(list, pageable, list.size());
+
+        ResponseRendezVousDTO responseRendezVousDTO = new ResponseRendezVousDTO();
+        responseRendezVousDTO.setPatientId(1L);
+
+        when(rendezVousRepository.findByPatient_Nom(nom, pageable)).thenReturn(page);
+        when(rendezVousMapper.toResponseDTO(rendezVous)).thenReturn(responseRendezVousDTO);
+
+        Page<ResponseRendezVousDTO> responseRendezVousDTOS = rendezVousService.findRendezVousPatientByNom(nom, pageable);
+
+        assertNotNull(responseRendezVousDTOS);
+        assertEquals(1 , responseRendezVousDTOS.getContent().size());
+        assertEquals(1L , responseRendezVousDTOS.getContent().get(0).getPatientId());
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\src\test\java\org\HealthCare\healthcare\HealthCareApplicationTests.java =====
+
+package org.HealthCare.healthcare;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class HealthCareApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\target\classes\application.properties =====
+
+spring.application.name=HealthCare
+server.port=8080
+
+spring.datasource.url=${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.hikari.maximum-pool-size=${SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE:3}
+spring.datasource.hikari.minimum-idle=${SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE:0}
+spring.datasource.hikari.connection-timeout=${SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT:30000}
+spring.datasource.hikari.validation-timeout=${SPRING_DATASOURCE_HIKARI_VALIDATION_TIMEOUT:5000}
+spring.datasource.hikari.max-lifetime=${SPRING_DATASOURCE_HIKARI_MAX_LIFETIME:1800000}
+spring.datasource.hikari.idle-timeout=${SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT:600000}
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.flyway.enabled=true
+logging.level.org.springframework.security=DEBUG
+server.error.include-message=always
+server.error.include-binding-errors=always
+
+
+springdoc.api-docs.path=/api-docs
+springdoc.swagger-ui.path=/swagger-ui.html
+
+jwt.secret=${JWT_SECRET}
+jwt.expiration=${JWT_EXPIRATION}
+
+spring.cache.type=${SPRING_CACHE_TYPE:simple}
+spring.data.redis.url=${SPRING_DATA_REDIS_URL:}
+spring.data.redis.host=${SPRING_DATA_REDIS_HOST:localhost}
+spring.data.redis.port=${SPRING_DATA_REDIS_PORT:6379}
+spring.data.redis.username=${SPRING_DATA_REDIS_USERNAME:default}
+spring.data.redis.password=${SPRING_DATA_REDIS_PASSWORD:}
+spring.data.redis.ssl.enabled=${SPRING_DATA_REDIS_SSL_ENABLED:false}
+spring.data.redis.timeout=${SPRING_DATA_REDIS_TIMEOUT:5s}
+spring.cache.redis.time-to-live=600000
+spring.cache.redis.cache-null-values=false
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\target\generated-sources\annotations\org\HealthCare\healthcare\Mapper\DossierMedicalMapperImpl.java =====
+
+package org.HealthCare.healthcare.Mapper;
+
+import javax.annotation.processing.Generated;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.RequestDossierMedicalDTO;
+import org.HealthCare.healthcare.DTO.patient.dossierMedical.ResponseDossierMedicalDTO;
+import org.HealthCare.healthcare.Entity.DossierMedical;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-06-12T10:52:10+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Oracle Corporation)"
+)
+@Component
+public class DossierMedicalMapperImpl implements DossierMedicalMapper {
+
+    @Override
+    public DossierMedical toEntity(RequestDossierMedicalDTO dto) {
+        if ( dto == null ) {
+            return null;
+        }
+
+        DossierMedical dossierMedical = new DossierMedical();
+
+        dossierMedical.setDiagnostic( dto.getDiagnostic() );
+        dossierMedical.setObservation( dto.getObservation() );
+        dossierMedical.setDateCreation( dto.getDateCreation() );
+
+        return dossierMedical;
+    }
+
+    @Override
+    public ResponseDossierMedicalDTO toResponse(DossierMedical dossierMedical) {
+        if ( dossierMedical == null ) {
+            return null;
+        }
+
+        ResponseDossierMedicalDTO responseDossierMedicalDTO = new ResponseDossierMedicalDTO();
+
+        responseDossierMedicalDTO.setPatientId( dossierMedicalPatientId( dossierMedical ) );
+        responseDossierMedicalDTO.setId( dossierMedical.getId() );
+        responseDossierMedicalDTO.setDiagnostic( dossierMedical.getDiagnostic() );
+        responseDossierMedicalDTO.setObservation( dossierMedical.getObservation() );
+        responseDossierMedicalDTO.setDateCreation( dossierMedical.getDateCreation() );
+
+        return responseDossierMedicalDTO;
+    }
+
+    private Long dossierMedicalPatientId(DossierMedical dossierMedical) {
+        if ( dossierMedical == null ) {
+            return null;
+        }
+        Patient patient = dossierMedical.getPatient();
+        if ( patient == null ) {
+            return null;
+        }
+        Long id = patient.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\target\generated-sources\annotations\org\HealthCare\healthcare\Mapper\MedecinMapperImpl.java =====
+
+package org.HealthCare.healthcare.Mapper;
+
+import javax.annotation.processing.Generated;
+import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.RequestMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
+import org.HealthCare.healthcare.Entity.Medecin;
+import org.HealthCare.healthcare.Entity.User;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-06-12T10:52:10+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Oracle Corporation)"
+)
+@Component
+public class MedecinMapperImpl implements MedecinMapper {
+
+    @Override
+    public Medecin toEntity(RequestMedecinDTO dto) {
+        if ( dto == null ) {
+            return null;
+        }
+
+        Medecin medecin = new Medecin();
+
+        medecin.setNom( dto.getNom() );
+        medecin.setSpecialite( dto.getSpecialite() );
+        medecin.setEmail( dto.getEmail() );
+        medecin.setTelephone( dto.getTelephone() );
+
+        return medecin;
+    }
+
+    @Override
+    public Medecin toEntity(PutMedecinDTO dto) {
+        if ( dto == null ) {
+            return null;
+        }
+
+        Medecin medecin = new Medecin();
+
+        medecin.setNom( dto.getNom() );
+        medecin.setSpecialite( dto.getSpecialite() );
+        medecin.setEmail( dto.getEmail() );
+        medecin.setTelephone( dto.getTelephone() );
+
+        return medecin;
+    }
+
+    @Override
+    public ResponseMedecinDTO toResponseDTO(Medecin medecin) {
+        if ( medecin == null ) {
+            return null;
+        }
+
+        ResponseMedecinDTO responseMedecinDTO = new ResponseMedecinDTO();
+
+        responseMedecinDTO.setUserId( medecinUserId( medecin ) );
+        responseMedecinDTO.setId( medecin.getId() );
+        responseMedecinDTO.setNom( medecin.getNom() );
+        responseMedecinDTO.setSpecialite( medecin.getSpecialite() );
+        responseMedecinDTO.setEmail( medecin.getEmail() );
+        responseMedecinDTO.setTelephone( medecin.getTelephone() );
+
+        return responseMedecinDTO;
+    }
+
+    @Override
+    public void updateMedecin(PutMedecinDTO dto, Medecin medecin) {
+        if ( dto == null ) {
+            return;
+        }
+
+        medecin.setNom( dto.getNom() );
+        medecin.setSpecialite( dto.getSpecialite() );
+        medecin.setEmail( dto.getEmail() );
+        medecin.setTelephone( dto.getTelephone() );
+    }
+
+    private Long medecinUserId(Medecin medecin) {
+        if ( medecin == null ) {
+            return null;
+        }
+        User user = medecin.getUser();
+        if ( user == null ) {
+            return null;
+        }
+        Long id = user.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\target\generated-sources\annotations\org\HealthCare\healthcare\Mapper\PatientMapperImpl.java =====
+
+package org.HealthCare.healthcare.Mapper;
+
+import javax.annotation.processing.Generated;
+import org.HealthCare.healthcare.DTO.patient.PutPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.RequestPatientDTO;
+import org.HealthCare.healthcare.DTO.patient.ResponsePatientDTO;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Entity.User;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-06-12T10:52:10+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Oracle Corporation)"
+)
+@Component
+public class PatientMapperImpl implements PatientMapper {
+
+    @Override
+    public Patient toEntity(RequestPatientDTO dto) {
+        if ( dto == null ) {
+            return null;
+        }
+
+        Patient patient = new Patient();
+
+        patient.setNom( dto.getNom() );
+        patient.setPrenom( dto.getPrenom() );
+        patient.setTelephone( dto.getTelephone() );
+        patient.setDateNaissance( dto.getDateNaissance() );
+
+        return patient;
+    }
+
+    @Override
+    public ResponsePatientDTO toResponseDTO(Patient patient) {
+        if ( patient == null ) {
+            return null;
+        }
+
+        ResponsePatientDTO responsePatientDTO = new ResponsePatientDTO();
+
+        responsePatientDTO.setUserId( patientUserId( patient ) );
+        responsePatientDTO.setId( patient.getId() );
+        responsePatientDTO.setNom( patient.getNom() );
+        responsePatientDTO.setPrenom( patient.getPrenom() );
+        responsePatientDTO.setTelephone( patient.getTelephone() );
+        responsePatientDTO.setDateNaissance( patient.getDateNaissance() );
+
+        return responsePatientDTO;
+    }
+
+    @Override
+    public void updatePatient(PutPatientDTO dto, Patient patient) {
+        if ( dto == null ) {
+            return;
+        }
+
+        patient.setNom( dto.getNom() );
+        patient.setPrenom( dto.getPrenom() );
+        patient.setTelephone( dto.getTelephone() );
+        patient.setDateNaissance( dto.getDateNaissance() );
+    }
+
+    private Long patientUserId(Patient patient) {
+        if ( patient == null ) {
+            return null;
+        }
+        User user = patient.getUser();
+        if ( user == null ) {
+            return null;
+        }
+        Long id = user.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\target\generated-sources\annotations\org\HealthCare\healthcare\Mapper\RendezVousMapperImpl.java =====
+
+package org.HealthCare.healthcare.Mapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import org.HealthCare.healthcare.DTO.patient.medecin.CountRdvDeMedecinDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.PutRendezVousDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.RequestRendezVousDTO;
+import org.HealthCare.healthcare.DTO.patient.rendezVous.ResponseRendezVousDTO;
+import org.HealthCare.healthcare.Entity.Medecin;
+import org.HealthCare.healthcare.Entity.Patient;
+import org.HealthCare.healthcare.Entity.RendezVous;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-06-12T10:52:10+0100",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Oracle Corporation)"
+)
+@Component
+public class RendezVousMapperImpl implements RendezVousMapper {
+
+    @Override
+    public RendezVous toEntity(RequestRendezVousDTO dto) {
+        if ( dto == null ) {
+            return null;
+        }
+
+        RendezVous rendezVous = new RendezVous();
+
+        rendezVous.setDateRendezVous( dto.getDateRendezVous() );
+        rendezVous.setStatut( dto.getStatut() );
+
+        return rendezVous;
+    }
+
+    @Override
+    public ResponseRendezVousDTO toResponseDTO(RendezVous rendezVous) {
+        if ( rendezVous == null ) {
+            return null;
+        }
+
+        ResponseRendezVousDTO responseRendezVousDTO = new ResponseRendezVousDTO();
+
+        responseRendezVousDTO.setPatientId( rendezVousPatientId( rendezVous ) );
+        responseRendezVousDTO.setMedecinId( rendezVousMedecinId( rendezVous ) );
+        responseRendezVousDTO.setId( rendezVous.getId() );
+        responseRendezVousDTO.setDateRendezVous( rendezVous.getDateRendezVous() );
+        responseRendezVousDTO.setStatut( rendezVous.getStatut() );
+
+        return responseRendezVousDTO;
+    }
+
+    @Override
+    public CountRdvDeMedecinDTO toResponseList(RendezVous rendezVous) {
+        if ( rendezVous == null ) {
+            return null;
+        }
+
+        CountRdvDeMedecinDTO countRdvDeMedecinDTO = new CountRdvDeMedecinDTO();
+
+        return countRdvDeMedecinDTO;
+    }
+
+    @Override
+    public List<ResponseRendezVousDTO> toResponseDTOList(List<RendezVous> rendezVous) {
+        if ( rendezVous == null ) {
+            return null;
+        }
+
+        List<ResponseRendezVousDTO> list = new ArrayList<ResponseRendezVousDTO>( rendezVous.size() );
+        for ( RendezVous rendezVous1 : rendezVous ) {
+            list.add( toResponseDTO( rendezVous1 ) );
+        }
+
+        return list;
+    }
+
+    @Override
+    public void updateRendeVous(PutRendezVousDTO dto, RendezVous rendezVous) {
+        if ( dto == null ) {
+            return;
+        }
+
+        rendezVous.setDateRendezVous( dto.getDateRendezVous() );
+        rendezVous.setStatut( dto.getStatut() );
+    }
+
+    private Long rendezVousPatientId(RendezVous rendezVous) {
+        if ( rendezVous == null ) {
+            return null;
+        }
+        Patient patient = rendezVous.getPatient();
+        if ( patient == null ) {
+            return null;
+        }
+        Long id = patient.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+
+    private Long rendezVousMedecinId(RendezVous rendezVous) {
+        if ( rendezVous == null ) {
+            return null;
+        }
+        Medecin medecin = rendezVous.getMedecin();
+        if ( medecin == null ) {
+            return null;
+        }
+        Long id = medecin.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+}
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\target\maven-archiver\pom.properties =====
+
+artifactId=HealthCare
+groupId=org.e-HealthCare
+version=0.0.1-SNAPSHOT
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\docker-compose.yml =====
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    container_name: HealthCare-app
+    restart: always
+    environment:
+      # Modifie l-URL bash t-chouf f container "db" local (port internal 3306)
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/healthcare?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      # Redis setup
+      - SPRING_DATA_REDIS_URL=redis://redis:6379
+      - SPRING_DATA_REDIS_SSL=false
+      - SPRING_CACHE_TYPE=redis
+      # JWT setup
+      - JWT_SECRET=MaCleSecreteSuperLongueEtSecurisee1234567890!
+      - JWT_EXPIRATION=86400000
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    container_name: HealthCare-db
+    restart: always
+    environment:
+      - MYSQL_DATABASE=healthcare
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=rootpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    container_name: HealthCare-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: HealthCare-redisinsight
+    restart: always
+    ports:
+      - "8001:8001"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
+
+
+===== C:\Users\enaa\IdeaProjects\HealthCare-Syst-me-de-Gestion_M-dicale\pom.xml =====
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>org.e-HealthCare</groupId>
+    <artifactId>HealthCare</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>HealthCare</name>
+    <description>HealthCare</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <lombok.version>1.18.30</lombok.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+
+        <!-- Database -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Tools -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+
+        <!-- Documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JWT -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- Cache -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <!-- PDF Generation -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
