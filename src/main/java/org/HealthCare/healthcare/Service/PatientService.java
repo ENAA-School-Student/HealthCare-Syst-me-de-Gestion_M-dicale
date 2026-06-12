@@ -27,7 +27,7 @@ public class PatientService {
     }
 
     public byte[] generatePatientReport(Long id) {
-        Patient patient = patientRepository.findById(id)
+        Patient patient = patientRepository.findByIdWithRendezVous(id)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
         String content = "Rapport pour le patient: " + patient.getNom() + " " + patient.getPrenom() + "\n" +
                 "Téléphone: " + patient.getTelephone() + "\n" +
