@@ -39,21 +39,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
       - name: Check required secrets
+        id: railway_secrets
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
         run: |
           if [ -z "$RAILWAY_TOKEN" ] || [ -z "$RAILWAY_PROJECT_ID" ] || [ -z "$RAILWAY_SERVICE" ]; then
-            echo "Missing required secrets: RAILWAY_TOKEN, RAILWAY_PROJECT_ID, RAILWAY_SERVICE"
-            exit 1
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Skipping Railway deployment because required secrets are missing (RAILWAY_TOKEN, RAILWAY_PROJECT_ID, RAILWAY_SERVICE)."
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Install Railway CLI
+        if: steps.railway_secrets.outputs.available == 'true'
+        run: npm install -g @railway/cli
+
       - name: Deploy
+        if: steps.railway_secrets.outputs.available == 'true'
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
