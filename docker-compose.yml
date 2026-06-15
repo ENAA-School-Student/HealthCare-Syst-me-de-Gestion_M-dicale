@@ -6,15 +6,12 @@ services:
     container_name: HealthCare-app
     restart: always
     environment:
-      # Modifie l-URL bash t-chouf f container "db" local (port internal 3306)
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/healthcare?allowPublicKeyRetrieval=true&useSSL=false
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
-      # Redis setup
       - SPRING_DATA_REDIS_URL=redis://redis:6379
       - SPRING_DATA_REDIS_SSL=false
       - SPRING_CACHE_TYPE=redis
-      # JWT setup
       - JWT_SECRET=MaCleSecreteSuperLongueEtSecurisee1234567890!
       - JWT_EXPIRATION=86400000
     depends_on:
