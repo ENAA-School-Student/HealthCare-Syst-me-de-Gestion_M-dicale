@@ -7,6 +7,9 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   ci:
     name: Build Maven
@@ -39,9 +42,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
       - name: Validate deploy secrets
         id: check_secrets
         env:
@@ -49,11 +49,15 @@ jobs:
           RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
         run: |
           if [ -z "$RAILWAY_TOKEN" ] || [ -z "$RAILWAY_SERVICE" ]; then
-            echo "Skipping deploy: missing RAILWAY_TOKEN or RAILWAY_SERVICE"
+            echo "::warning::Skipping Railway deployment because required secrets are missing (RAILWAY_TOKEN, RAILWAY_SERVICE)."
             echo "proceed=false" >> "$GITHUB_OUTPUT"
           else
             echo "proceed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Install Railway CLI
+        if: steps.check_secrets.outputs.proceed == 'true'
+        run: npm install -g @railway/cli
 
       - name: Deploy
         if: steps.check_secrets.outputs.proceed == 'true'
@@ -73,4 +77,3 @@ jobs:
       - name: Deploy skipped
         if: steps.check_secrets.outputs.proceed != 'true'
         run: echo "Deploy skipped (configure repository secrets to enable Railway deploy)."
-
