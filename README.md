@@ -81,6 +81,32 @@ L’application est conteneurisée pour faciliter le déploiement :
 
 ---
 
+## 💡 Idée Hackathon Rally IA (Maroc)
+
+### Problématiques Santé au Maroc
+*   **Inégalités d’accès aux soins** entre zones urbaines et rurales.
+*   **Délais de rendez-vous élevés** pour certaines spécialités.
+*   **Parcours patient fragmenté** (données dispersées entre structures).
+*   **Charge croissante des maladies chroniques** (diabète, HTA, etc.).
+*   **Manque d’outils prédictifs** pour prioriser les patients à risque.
+
+### Proposition : **SehhaFlow AI**
+Une plateforme IA qui combine :
+*   **Triage intelligent** (priorité médicale selon symptômes et historique).
+*   **Orientation automatique** vers le bon niveau de soin (centre, spécialiste, téléconsultation).
+*   **Prédiction de no-show** et optimisation des créneaux RDV.
+*   **Score de risque chronique** pour renforcer la prévention.
+
+### Pourquoi l’idée est logique et investissable
+*   **Impact clair :** réduction des délais, meilleure prise en charge et suivi continu.
+*   **Modèle économique hybride :** B2G (hôpitaux publics), B2B (cliniques/assureurs), B2B2C (patients).
+*   **Scalabilité régionale :** solution réplicable en Afrique francophone.
+*   **Attractivité investisseurs :**
+    *   **Nationaux :** fonds healthtech, assureurs, groupes hospitaliers marocains.
+    *   **Internationaux :** impact funds, healthtech VCs, institutions de développement.
+
+---
+
 ## 📄 Conception UML
 Le projet inclut :
 1.  Diagramme de Classes
