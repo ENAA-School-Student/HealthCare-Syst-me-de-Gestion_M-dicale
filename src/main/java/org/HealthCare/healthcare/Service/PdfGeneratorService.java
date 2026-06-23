@@ -26,7 +26,7 @@ public class PdfGeneratorService {
         title.setAlignment(Element.ALIGN_CENTER);
         document.add(title);
 
-        document.add(new Paragraph(" ")); // Spacer
+        document.add(new Paragraph(" "));
 
         Patient patient = dossier.getPatient();
         if (patient != null) {
