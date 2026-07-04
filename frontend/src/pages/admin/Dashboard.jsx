@@ -19,7 +19,7 @@ export default function Dashboard() {
         const [patientsRes, medecinsRes, rdvsRes, dossiersRes] = await Promise.all([
           getAllPatients({ page: 0, size: 1 }),
           getAllMedecins({ page: 0, size: 1 }),
-          getAllRendezVous({ page: 0, size: 5, sort: 'date,desc' }),
+          getAllRendezVous({ page: 0, size: 5, sort: 'dateRendezVous,desc' }),
           getAllDossiers({ page: 0, size: 1 }),
         ]);
         setStats({
@@ -76,7 +76,7 @@ export default function Dashboard() {
                   <tr key={rdv.id}>
                     <td>{rdv.patient?.nom} {rdv.patient?.prenom}</td>
                     <td>Dr. {rdv.medecin?.nom}</td>
-                    <td>{new Date(rdv.date).toLocaleDateString('fr-FR')}</td>
+                    <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR')}</td>
                     <td><Badge status={rdv.statut} /></td>
                   </tr>
                 ))}

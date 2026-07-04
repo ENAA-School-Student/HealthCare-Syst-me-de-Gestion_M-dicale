@@ -84,7 +84,7 @@ export default function RendezVous() {
                   {rdvs.map(rdv => (
                     <tr key={rdv.id}>
                       <td>{rdv.patientNom || rdv.patient?.nom || '—'}</td>
-                      <td>{rdv.date ? new Date(rdv.date).toLocaleDateString('fr-FR') : '—'}</td>
+                      <td>{rdv.dateRendezVous ? new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR') : '—'}</td>
                       <td><Badge status={rdv.statut} /></td>
                       <td>
                         <div className="td-actions">

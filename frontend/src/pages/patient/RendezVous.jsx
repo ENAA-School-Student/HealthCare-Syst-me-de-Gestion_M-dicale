@@ -115,7 +115,7 @@ export default function RendezVous() {
                 {rdvs.map(rdv => (
                   <tr key={rdv.id}>
                     <td>{rdv.medecin?.nom || '—'}</td>
-                    <td>{new Date(rdv.date).toLocaleDateString('fr-FR')}</td>
+                    <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR')}</td>
                     <td><Badge status={rdv.statut} /></td>
                     <td>
                       {rdv.statut === 'EN_ATTENTE' && (

@@ -71,7 +71,7 @@ export default function RendezVous() {
     setForm({
       patient: rdv.patient?.id ?? '',
       medecin: rdv.medecin?.id ?? '',
-      date: rdv.date ? rdv.date.slice(0, 16) : '',
+      date: rdv.dateRendezVous ? rdv.dateRendezVous.slice(0, 16) : '',
       statut: rdv.statut,
     });
     await fetchDropdowns();
@@ -185,7 +185,7 @@ export default function RendezVous() {
                   <tr key={rdv.id}>
                     <td>{rdv.patient?.nom} {rdv.patient?.prenom}</td>
                     <td>Dr. {rdv.medecin?.nom}</td>
-                    <td>{new Date(rdv.date).toLocaleDateString('fr-FR')}</td>
+                    <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR')}</td>
                     <td><Badge status={rdv.statut} /></td>
                     <td>
                       <div className="flex gap-2">

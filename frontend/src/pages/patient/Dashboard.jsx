@@ -73,7 +73,7 @@ export default function Dashboard() {
                 {upcoming.slice(0, 5).map(rdv => (
                   <tr key={rdv.id}>
                     <td>{rdv.medecin?.nom || '—'}</td>
-                    <td>{new Date(rdv.date).toLocaleDateString('fr-FR')}</td>
+                    <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR')}</td>
                     <td><Badge status={rdv.statut} /></td>
                   </tr>
                 ))}
