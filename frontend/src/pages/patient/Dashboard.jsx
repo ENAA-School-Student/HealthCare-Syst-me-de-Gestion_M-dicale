@@ -1,0 +1,94 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CalendarDays, Clock, ArrowRight } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { getMyRendezVous } from '../../api/rendezVousApi';
+import StatCard from '../../components/common/StatCard';
+import Badge from '../../components/common/Badge';
+
+export default function Dashboard() {
+  const [rdvs, setRdvs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => { loadRdvs(); }, []);
+
+  const loadRdvs = async () => {
+    try {
+      const res = await getMyRendezVous({ page: 0, size: 50 });
+      setRdvs(res.data.content || res.data || []);
+    } catch {
+      toast.error('Erreur lors du chargement des rendez-vous');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const now = new Date();
+  const nextRdv = rdvs
+    .filter(r => r.statut !== 'ANNULE' && r.statut !== 'TERMINE' && new Date(r.date) > now)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+
+  const statCards = [
+    { label: 'Mes Rendez-vous', value: rdvs.length, icon: <CalendarDays size={20} />, color: 'var(--accent)', bg: 'var(--accent-soft)' },
+    { label: 'Prochain Rendez-vous', value: nextRdv ? new Date(nextRdv.date).toLocaleDateString('fr-FR') : 'Aucun', icon: <Clock size={20} />, color: 'var(--success)', bg: 'rgba(34,197,94,0.12)' },
+  ];
+
+  if (loading) {
+    return <div className="loading-container"><div className="spinner" /></div>;
+  }
+
+  const upcoming = rdvs.filter(r => r.statut !== 'ANNULE' && r.statut !== 'TERMINE');
+
+  return (
+    <div>
+      <div className="stat-grid">
+        {statCards.map((s, i) => <StatCard key={i} {...s} />)}
+      </div>
+
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="card-header">
+          <h3 className="card-title">Prochains Rendez-vous</h3>
+        </div>
+        {upcoming.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-state-icon">📅</div>
+            <div className="empty-state-text">Aucun rendez-vous à venir</div>
+            <div className="empty-state-sub">Vous pouvez en prendre un depuis la page dédiée</div>
+            <button className="btn btn-primary btn-sm" style={{ marginTop: 12 }} onClick={() => navigate('/patient/rendezvous')}>
+              Prendre un rendez-vous
+            </button>
+          </div>
+        ) : (
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Médecin</th>
+                  <th>Date</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcoming.slice(0, 5).map(rdv => (
+                  <tr key={rdv.id}>
+                    <td>{rdv.medecin?.nom || '—'}</td>
+                    <td>{new Date(rdv.date).toLocaleDateString('fr-FR')}</td>
+                    <td><Badge status={rdv.statut} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {upcoming.length > 5 && (
+          <div style={{ padding: '12px 16px', textAlign: 'right' }}>
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/patient/rendezvous')}>
+              Voir tout <ArrowRight size={14} />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
