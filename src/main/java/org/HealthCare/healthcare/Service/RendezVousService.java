@@ -73,6 +73,13 @@ public class RendezVousService {
         return rendezVousMapper.toResponseDTO(rendezVous);
     }
 
+    @Cacheable(value = "rendezvous", key = "#id")
+    public ResponseRendezVousDTO getRendezVousById(Long id) {
+        RendezVous rdv = rendezVousRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rendez Vous not found"));
+        return rendezVousMapper.toResponseDTO(rdv);
+    }
+
     @Cacheable(value = "rendezvous", key = "'all-' + #pageable.pageNumber")
     public Page<ResponseRendezVousDTO> getAllRendezVous(Pageable pageable){
         Page<RendezVous> page = rendezVousRepository.findAll(pageable);

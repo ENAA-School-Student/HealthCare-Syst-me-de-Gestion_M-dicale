@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI fleetFlowOpenAPI() {
+    public OpenAPI healthCareOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("HealthCare API")

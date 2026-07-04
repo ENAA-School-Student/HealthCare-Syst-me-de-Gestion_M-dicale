@@ -65,7 +65,7 @@ public class MedecinController {
     @GetMapping("/telephone")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ResponseMedecinDTO>> getMedecinByTele(@RequestParam Long tele, Pageable pageable){
-        return ResponseEntity.ok(medecinService.getPatientByTele(tele , pageable));
+        return ResponseEntity.ok(medecinService.getMedecinByTele(tele , pageable));
     }
 
 }

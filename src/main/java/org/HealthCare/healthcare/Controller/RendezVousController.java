@@ -44,20 +44,20 @@ public class RendezVousController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(#dto.patientId).userId)")
     public ResponseEntity<ResponseRendezVousDTO> createRendezVous(@Valid @RequestBody RequestRendezVousDTO dto){
         ResponseRendezVousDTO responseRendezVousDTO = rendezVousService.createRendezVous(dto);
         return new ResponseEntity<>(responseRendezVousDTO , HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@rendezVousService.getRendezVousById(#id).patientId).userId)")
     public ResponseEntity<ResponseRendezVousDTO> updateRendezVous(@PathVariable Long id , @Valid @RequestBody PutRendezVousDTO dto){
         return ResponseEntity.ok(rendezVousService.updateRendezVous(id, dto));
     }
 
     @PutMapping("/{id}/annuler")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@rendezVousService.getRendezVousById(#id).patientId).userId)")
     public ResponseEntity<ResponseRendezVousDTO> annulerRendezVous(@PathVariable Long id){
         return ResponseEntity.ok(rendezVousService.annulerRendezVous(id));
     }

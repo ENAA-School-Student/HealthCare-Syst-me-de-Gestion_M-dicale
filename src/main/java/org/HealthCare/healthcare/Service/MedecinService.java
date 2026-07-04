@@ -4,8 +4,10 @@ import org.HealthCare.healthcare.DTO.patient.medecin.PutMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.RequestMedecinDTO;
 import org.HealthCare.healthcare.DTO.patient.medecin.ResponseMedecinDTO;
 import org.HealthCare.healthcare.Entity.Medecin;
+import org.HealthCare.healthcare.Entity.User;
 import org.HealthCare.healthcare.Mapper.MedecinMapper;
 import org.HealthCare.healthcare.Repository.MedecinRepository;
+import org.HealthCare.healthcare.Repository.UserRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -18,10 +20,12 @@ import java.util.List;
 public class MedecinService {
     private MedecinRepository medecinRepository;
     private MedecinMapper medecinMapper;
+    private UserRepository userRepository;
 
-    public MedecinService(MedecinRepository medecinRepository , MedecinMapper medecinMapper){
+    public MedecinService(MedecinRepository medecinRepository , MedecinMapper medecinMapper, UserRepository userRepository){
         this.medecinRepository = medecinRepository;
         this.medecinMapper = medecinMapper;
+        this.userRepository = userRepository;
     }
 
     @CacheEvict(value = "medecins", allEntries = true)
@@ -42,7 +46,13 @@ public class MedecinService {
 
     @CacheEvict(value = "medecins", allEntries = true)
     public void deleteMedecin(Long id){
+        Medecin medecin = medecinRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Medecin introuvable"));
+        User user = medecin.getUser();
         medecinRepository.deleteById(id);
+        if (user != null) {
+            userRepository.deleteById(user.getId());
+        }
     }
 
     @Cacheable(value = "medecins", key = "#id")
@@ -60,7 +70,7 @@ public class MedecinService {
     }
 
     @Cacheable(value = "medecins", key = "#tele + '-' + #pageable.pageNumber")
-    public Page<ResponseMedecinDTO> getPatientByTele(Long tele , Pageable pageable){
+    public Page<ResponseMedecinDTO> getMedecinByTele(Long tele , Pageable pageable){
         Page<Medecin> page = medecinRepository.findMedecinByTelephone(tele , pageable);
         return page.map(medecinMapper::toResponseDTO);
     }
