@@ -33,11 +33,16 @@ export default function RendezVous() {
 
   const handleConfirm = async (id) => {
     try {
-      await updateRendezVous(id, { statut: 'CONFIRME' });
+      const rdv = rdvs.find(r => r.id === id);
+      await updateRendezVous(id, {
+        dateRendezVous: rdv?.dateRendezVous,
+        statut: 'CONFIRME',
+      });
       toast.success('Rendez-vous confirmé');
       fetchRdvs();
     } catch (err) {
-      toast.error(err.response?.data || 'Erreur lors de la confirmation');
+      const d = err.response?.data;
+      toast.error(typeof d === 'string' ? d : 'Erreur lors de la confirmation');
     }
   };
 
@@ -47,7 +52,8 @@ export default function RendezVous() {
       toast.success('Rendez-vous annulé');
       fetchRdvs();
     } catch (err) {
-      toast.error(err.response?.data || 'Erreur lors de l\'annulation');
+      const d = err.response?.data;
+      toast.error(typeof d === 'string' ? d : 'Erreur lors de l\'annulation');
     }
   };
 

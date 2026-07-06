@@ -10,12 +10,10 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class PutRendezVousDTO {
-    @NotNull(message = "Le patient_id est obligatoire")
     private Long patientId;
-    @NotNull(message = "Le medecin_id est obligatoire")
     private Long medecinId;
     @NotNull(message = "Le date de rendez vous est obligatoire")
     private LocalDate dateRendezVous;
-    @NotNull(message = "Le type de rendez vous est obligatoire")
+    @NotNull(message = "Le statut est obligatoire")
     private StatutRendezVous statut;
 }

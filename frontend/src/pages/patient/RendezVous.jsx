@@ -3,11 +3,13 @@ import { Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getMyRendezVous, createRendezVous, annulerRendezVous } from '../../api/rendezVousApi';
 import { getAllMedecins } from '../../api/medecinApi';
+import { useAuth } from '../../context/AuthContext';
 import Badge from '../../components/common/Badge';
 import Pagination from '../../components/common/Pagination';
 import Modal from '../../components/common/Modal';
 
 export default function RendezVous() {
+  const { profileId } = useAuth();
   const [rdvs, setRdvs] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -52,15 +54,17 @@ export default function RendezVous() {
     setSubmitting(true);
     try {
       await createRendezVous({
-        medecin: { id: parseInt(form.medecinId) },
-        date: form.date,
-        comments: form.comments,
+        patientId: profileId,
+        medecinId: parseInt(form.medecinId),
+        dateRendezVous: form.date,
+        statut: 'EN_ATTENTE',
       });
       toast.success('Rendez-vous créé avec succès');
       setModalOpen(false);
       loadRdvs();
     } catch (err) {
-      toast.error(err.response?.data || 'Erreur lors de la création');
+      const d = err.response?.data;
+      toast.error(typeof d === 'string' ? d : 'Erreur lors de la création');
     } finally {
       setSubmitting(false);
     }
