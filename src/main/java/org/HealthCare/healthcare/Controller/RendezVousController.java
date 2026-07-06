@@ -50,6 +50,12 @@ public class RendezVousController {
         return new ResponseEntity<>(responseRendezVousDTO , HttpStatus.CREATED);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PATIENT', 'MEDECIN')")
+    public ResponseEntity<ResponseRendezVousDTO> getRendezVousById(@PathVariable Long id){
+        return ResponseEntity.ok(rendezVousService.getRendezVousById(id));
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@rendezVousService.getRendezVousById(#id).patientId).userId)")
     public ResponseEntity<ResponseRendezVousDTO> updateRendezVous(@PathVariable Long id , @Valid @RequestBody PutRendezVousDTO dto){
@@ -92,6 +98,7 @@ public class RendezVousController {
     }
 
     @GetMapping("/medecin")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ResponseRendezVousDTO>> getRendezVousDeMedecin
             (@RequestParam Long id , @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date, Pageable pageable){
         return ResponseEntity.ok(rendezVousService.recuperDesRendezVousDeMedecinByDate(id , date, pageable));
