@@ -57,13 +57,13 @@ public class RendezVousController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@rendezVousService.getRendezVousById(#id).patientId).userId)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@rendezVousService.getRendezVousById(#id).patientId).userId)")
     public ResponseEntity<ResponseRendezVousDTO> updateRendezVous(@PathVariable Long id , @Valid @RequestBody PutRendezVousDTO dto){
         return ResponseEntity.ok(rendezVousService.updateRendezVous(id, dto));
     }
 
     @PutMapping("/{id}/annuler")
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@rendezVousService.getRendezVousById(#id).patientId).userId)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN') or (hasRole('PATIENT') and principal.id == @patientService.getPatientById(@rendezVousService.getRendezVousById(#id).patientId).userId)")
     public ResponseEntity<ResponseRendezVousDTO> annulerRendezVous(@PathVariable Long id){
         return ResponseEntity.ok(rendezVousService.annulerRendezVous(id));
     }
