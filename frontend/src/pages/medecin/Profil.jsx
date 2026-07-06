@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { User, Save } from 'lucide-react';
+import { getAllMedecins, getMedecinById, updateMedecin } from '../../api/medecinApi';
 import { useAuth } from '../../context/AuthContext';
-import { getAllMedecins, updateMedecin } from '../../api/medecinApi';
 import toast from 'react-hot-toast';
 
 const schema = yup.object({
@@ -15,7 +15,7 @@ const schema = yup.object({
 });
 
 export default function Profil() {
-  const { user } = useAuth();
+  const { profileId, user } = useAuth();
   const [medecin, setMedecin] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -25,29 +25,32 @@ export default function Profil() {
   useEffect(() => {
     const fetchMedecin = async () => {
       try {
+        if (profileId) {
+          const res = await getMedecinById(profileId);
+          const found = res.data;
+          setMedecin(found);
+          reset({ nom: found.nom || '', specialite: found.specialite || '', email: found.email || '', telephone: found.telephone || '' });
+          return;
+        }
         const res = await getAllMedecins({ page: 0, size: 100 });
-        const list = res.data.content || res.data || [];
-        if (Array.isArray(list)) {
-          const found = list.find(m => m.email === user?.email);
-          if (found) {
-            setMedecin(found);
-            reset({ nom: found.nom || '', specialite: found.specialite || '', email: found.email || '', telephone: found.telephone || '' });
-          }
+        const found = res.data.content.find(m => m.email === user?.email);
+        if (found) {
+          setMedecin(found);
+          reset({ nom: found.nom || '', specialite: found.specialite || '', email: found.email || '', telephone: found.telephone || '' });
         }
       } catch (err) {
-        toast.error('Erreur lors du chargement du profil');
+        toast.error('Erreur lors du chargement du profil: ' + (err.response?.data || err.message));
       } finally {
         setLoading(false);
       }
     };
-    if (user?.email) fetchMedecin();
-    else setLoading(false);
-  }, [user, reset]);
+    fetchMedecin();
+  }, [profileId, user?.email, reset]);
 
   const onSubmit = async (data) => {
-    if (!medecin?.id) return;
+    if (!medecin?.id) { toast.error('Impossible de mettre à jour : profil non chargé'); return; }
     try {
-      const res = await updateMedecin(medecin.id, data);
+      const res = await updateMedecin(medecin.id, { ...data, telephone: Number(data.telephone) });
       setMedecin(res.data);
       setEditing(false);
       toast.success('Profil mis à jour');
@@ -76,7 +79,7 @@ export default function Profil() {
             <User size={24} color="white" />
           </div>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700 }}>{medecin?.nom || user?.email || 'Médecin'}</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 700 }}>{medecin?.nom || 'Médecin'}</h2>
             <p style={{ fontSize: 13, color: 'var(--accent)', textTransform: 'capitalize' }}>{medecin?.specialite || 'Médecin'}</p>
           </div>
         </div>

@@ -22,7 +22,7 @@ export default function Login() {
   const onSubmit = async (data) => {
     try {
       const res = await loginApi(data);
-      const user = login(res.data.token);
+      const user = login(res.data);
       toast.success('Connexion réussie !');
       navigate(ROLE_REDIRECT[user.role] || '/');
     } catch (err) {

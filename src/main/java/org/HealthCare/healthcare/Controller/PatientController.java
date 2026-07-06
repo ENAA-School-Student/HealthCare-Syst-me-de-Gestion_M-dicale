@@ -58,7 +58,7 @@ public class PatientController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN')")
     public ResponseEntity<Page<ResponsePatientDTO>> getAllPatients(Pageable pageable){
         return ResponseEntity.ok(patientService.getAllPatients(pageable));
     }
@@ -70,7 +70,7 @@ public class PatientController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN')")
     public ResponseEntity<Page<ResponsePatientDTO>> searchPatientByNom(@RequestParam String nom, @PageableDefault(sort = "nom") Pageable pageable){
         return ResponseEntity.ok(patientService.searchPatientByNom(nom, pageable));
     }

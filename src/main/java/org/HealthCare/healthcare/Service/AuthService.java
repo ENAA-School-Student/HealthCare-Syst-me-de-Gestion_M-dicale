@@ -59,8 +59,14 @@ public class AuthService {
 
         repo.save(user);
 
-        String token = jwtUtil.genereteToken(user.getEmail(), user.getRole().name());
-        return new AuthResponse(token);
+        Long profileId = null;
+        if (user.getRole() == RoleUser.PATIENT && user.getPatient() != null) {
+            profileId = user.getPatient().getId();
+        } else if (user.getRole() == RoleUser.MEDECIN && user.getMedecin() != null) {
+            profileId = user.getMedecin().getId();
+        }
+        String token = jwtUtil.genereteToken(user.getEmail(), user.getRole().name(), user.getId(), profileId);
+        return new AuthResponse(token, user.getId(), user.getRole().name(), profileId);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -71,8 +77,14 @@ public class AuthService {
             authenticationManager.authenticate(authToken);
 
             User user = repo.findByEmail(request.getEmail());
-            String token = jwtUtil.genereteToken(request.getEmail(), user.getRole().name());
-            return new AuthResponse(token);
+            Long profileId = null;
+            if (user.getRole() == RoleUser.PATIENT && user.getPatient() != null) {
+                profileId = user.getPatient().getId();
+            } else if (user.getRole() == RoleUser.MEDECIN && user.getMedecin() != null) {
+                profileId = user.getMedecin().getId();
+            }
+            String token = jwtUtil.genereteToken(request.getEmail(), user.getRole().name(), user.getId(), profileId);
+            return new AuthResponse(token, user.getId(), user.getRole().name(), profileId);
         } catch (Exception e) {
             log.error("Login failed for {}: {}", request.getEmail(), e.getMessage());
             throw e;

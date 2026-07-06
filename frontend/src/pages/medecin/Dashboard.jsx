@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Users, FileText } from 'lucide-react';
 import { getMyRendezVous } from '../../api/rendezVousApi';
-import { getAllDossiers } from '../../api/dossierApi';
 import StatCard from '../../components/common/StatCard';
 import Badge from '../../components/common/Badge';
 import toast from 'react-hot-toast';
@@ -14,16 +13,12 @@ export default function MedecinDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [rdvRes, dossierRes] = await Promise.all([
-          getMyRendezVous({ page: 0, size: 200 }),
-          getAllDossiers({ page: 0, size: 200 }),
-        ]);
+        const rdvRes = await getMyRendezVous({ page: 0, size: 200 });
         const rdvs = Array.isArray(rdvRes.data.content) ? rdvRes.data.content : (Array.isArray(rdvRes.data) ? rdvRes.data : []);
-        const dossiers = Array.isArray(dossierRes.data.content) ? dossierRes.data.content : (Array.isArray(dossierRes.data) ? dossierRes.data : []);
         const patients = new Set(rdvs.map(r => r.patientId || r.patient?.id).filter(Boolean));
-        setStats({ rdvCount: rdvs.length, patientCount: patients.size, dossierCount: dossiers.length });
+        setStats({ rdvCount: rdvs.length, patientCount: patients.size, dossierCount: 0 });
         const today = new Date().toISOString().split('T')[0];
-        setUpcoming(rdvs.filter(r => (r.date || '').split('T')[0] >= today).sort((a, b) => a.date?.localeCompare(b.date)).slice(0, 5));
+        setUpcoming(rdvs.filter(r => (r.dateRendezVous || '').split('T')[0] >= today).sort((a, b) => a.dateRendezVous?.localeCompare(b.dateRendezVous)).slice(0, 5));
       } catch (err) {
         toast.error('Erreur lors du chargement du tableau de bord');
       } finally {

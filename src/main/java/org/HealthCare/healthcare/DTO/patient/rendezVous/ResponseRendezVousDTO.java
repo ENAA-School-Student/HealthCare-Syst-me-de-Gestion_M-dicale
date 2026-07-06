@@ -13,5 +13,8 @@ public class ResponseRendezVousDTO {
     private LocalDate dateRendezVous;
     private StatutRendezVous statut;
     private Long patientId;
+    private String patientNom;
+    private String patientPrenom;
     private Long medecinId;
+    private String medecinNom;
 }

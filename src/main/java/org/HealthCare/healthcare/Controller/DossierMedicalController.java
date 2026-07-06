@@ -75,7 +75,7 @@ public class DossierMedicalController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN')")
     public ResponseEntity<Page<ResponseDossierMedicalDTO>> getAllDossierMedical(@PageableDefault(sort = "dateCreation", direction = Sort.Direction.DESC) Pageable pageable){
         return ResponseEntity.ok(dossierMedicalService.getAllDossierMedical(pageable));
     }

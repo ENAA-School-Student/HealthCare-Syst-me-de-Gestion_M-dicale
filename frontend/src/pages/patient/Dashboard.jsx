@@ -26,12 +26,12 @@ export default function Dashboard() {
 
   const now = new Date();
   const nextRdv = rdvs
-    .filter(r => r.statut !== 'ANNULE' && r.statut !== 'TERMINE' && new Date(r.date) > now)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+    .filter(r => r.statut !== 'ANNULE' && r.statut !== 'TERMINE' && new Date(r.dateRendezVous) > now)
+    .sort((a, b) => new Date(a.dateRendezVous) - new Date(b.dateRendezVous))[0];
 
   const statCards = [
     { label: 'Mes Rendez-vous', value: rdvs.length, icon: <CalendarDays size={20} />, color: 'var(--accent)', bg: 'var(--accent-soft)' },
-    { label: 'Prochain Rendez-vous', value: nextRdv ? new Date(nextRdv.date).toLocaleDateString('fr-FR') : 'Aucun', icon: <Clock size={20} />, color: 'var(--success)', bg: 'rgba(34,197,94,0.12)' },
+    { label: 'Prochain Rendez-vous', value: nextRdv ? new Date(nextRdv.dateRendezVous).toLocaleDateString('fr-FR') : 'Aucun', icon: <Clock size={20} />, color: 'var(--success)', bg: 'rgba(34,197,94,0.12)' },
   ];
 
   if (loading) {
@@ -72,7 +72,7 @@ export default function Dashboard() {
               <tbody>
                 {upcoming.slice(0, 5).map(rdv => (
                   <tr key={rdv.id}>
-                    <td>{rdv.medecin?.nom || '—'}</td>
+                    <td>{rdv.medecinNom || '—'}</td>
                     <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR')}</td>
                     <td><Badge status={rdv.statut} /></td>
                   </tr>

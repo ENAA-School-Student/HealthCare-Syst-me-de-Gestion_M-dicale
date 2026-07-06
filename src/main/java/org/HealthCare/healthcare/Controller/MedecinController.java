@@ -51,7 +51,7 @@ public class MedecinController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDECIN')")
     public ResponseEntity<Page<ResponseMedecinDTO>> getAllMedecin(Pageable pageable){
         return ResponseEntity.ok(medecinService.getAllMedecin(pageable));
     }

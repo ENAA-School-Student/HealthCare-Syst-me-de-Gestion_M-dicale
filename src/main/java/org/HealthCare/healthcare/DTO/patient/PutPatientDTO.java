@@ -17,6 +17,5 @@ public class PutPatientDTO {
     private String prenom;
     @NotNull(message = "Le telephone est obligatoire")
     private Long telephone;
-    @NotNull(message = "Le date de naissance est obligatoire")
     private LocalDate dateNaissance;
 }

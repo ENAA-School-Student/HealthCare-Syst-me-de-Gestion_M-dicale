@@ -1,25 +1,23 @@
 import { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
 import { Save } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAuth } from '../../context/AuthContext';
 import { getPatientById, updatePatient } from '../../api/patientApi';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Profil() {
-  const { token } = useAuth();
+  const { profileId } = useAuth();
   const [form, setForm] = useState({ nom: '', prenom: '', telephone: '', dateNaissance: '' });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const patientId = token ? jwtDecode(token).id : null;
-
   useEffect(() => {
-    if (patientId) loadPatient();
-  }, [patientId]);
+    if (profileId) loadPatient();
+    else setLoading(false);
+  }, [profileId]);
 
   const loadPatient = async () => {
     try {
-      const res = await getPatientById(patientId);
+      const res = await getPatientById(profileId);
       const p = res.data;
       setForm({
         nom: p.nom || '',
@@ -38,7 +36,10 @@ export default function Profil() {
     e.preventDefault();
     setSaving(true);
     try {
-      await updatePatient(patientId, form);
+      await updatePatient(profileId, {
+        ...form,
+        telephone: Number(form.telephone),
+      });
       toast.success('Profil mis à jour avec succès');
     } catch (err) {
       toast.error(err.response?.data || 'Erreur lors de la mise à jour');
@@ -49,6 +50,14 @@ export default function Profil() {
 
   if (loading) {
     return <div className="loading-container"><div className="spinner" /></div>;
+  }
+
+  if (!profileId) {
+    return (
+      <div className="card" style={{ padding: 24, textAlign: 'center' }}>
+        <p>Session expirée. Veuillez vous <a href="/login">reconnecter</a> pour accéder à votre profil.</p>
+      </div>
+    );
   }
 
   return (

@@ -74,8 +74,8 @@ export default function Dashboard() {
               <tbody>
                 {recentRdvs.map((rdv) => (
                   <tr key={rdv.id}>
-                    <td>{rdv.patient?.nom} {rdv.patient?.prenom}</td>
-                    <td>Dr. {rdv.medecin?.nom}</td>
+                    <td>{rdv.patientNom} {rdv.patientPrenom}</td>
+                    <td>Dr. {rdv.medecinNom}</td>
                     <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR')}</td>
                     <td><Badge status={rdv.statut} /></td>
                   </tr>
