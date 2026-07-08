@@ -8,5 +8,10 @@ const STATUS_MAP = {
 export default function Badge({ status, text }) {
   const key = typeof status === 'string' ? status : '';
   const s = STATUS_MAP[key] || { label: text || key || '—', cls: 'badge-accent' };
-  return <span className={`badge ${s.cls}`}>{s.label}</span>;
+  return (
+    <span className={`badge ${s.cls}`}>
+      <span className="badge-dot" />
+      {s.label}
+    </span>
+  );
 }

@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Pencil, XCircle, Download, Search, CalendarDays } from 'lucide-react';
+import { Plus, Pencil, XCircle, Download, Search, CalendarDays, Filter } from 'lucide-react';
 import Modal from '../../components/common/Modal';
 import Pagination from '../../components/common/Pagination';
 import Badge from '../../components/common/Badge';
+import PageTransition from '../../components/common/PageTransition';
 import { getAllRendezVous, createRendezVous, updateRendezVous, annulerRendezVous, getRendezVousByStatut, getRendezVousByPatient, getRendezVousByMedecin, downloadRendezVousPdf } from '../../api/rendezVousApi';
 import { getAllPatients } from '../../api/patientApi';
 import { getAllMedecins } from '../../api/medecinApi';
 import { downloadBlob } from '../../utils/downloadBlob';
+import { createRipple } from '../../utils/ripple';
 import toast from 'react-hot-toast';
 
 export default function RendezVous() {
@@ -97,13 +99,13 @@ export default function RendezVous() {
   };
 
   const handleCancel = async (id) => {
-    if (!window.confirm('Confirmer l\'annulation ?')) return;
+    if (!window.confirm("Confirmer l'annulation ?")) return;
     try {
       await annulerRendezVous(id);
       toast.success('Rendez-vous annulé');
       fetchRdvs(page, filterType, filterValue);
     } catch {
-      toast.error('Erreur lors de l\'annulation');
+      toast.error("Erreur lors de l'annulation");
     }
   };
 
@@ -126,129 +128,155 @@ export default function RendezVous() {
 
   const handlePageChange = (p) => setPage(p);
 
-  if (loading && rdvs.length === 0) return <div className="loading-container"><div className="spinner" /></div>;
+  if (loading && rdvs.length === 0) return (
+    <div className="loading-container">
+      <div className="spinner spinner-lg" />
+      <p>Chargement des rendez-vous...</p>
+    </div>
+  );
 
   return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">Rendez-vous</h1>
-        <p className="page-subtitle">Gestion des rendez-vous</p>
-      </div>
-      <div className="card">
-        <div className="card-header">
-          <div className="flex gap-2">
-            <select className="form-select" value={filterType} onChange={(e) => handleFilter(e.target.value)}>
-              <option value="">Tous les rendez-vous</option>
-              <option value="statut">Par statut</option>
-              <option value="patient">Par patient</option>
-              <option value="medecin">Par médecin</option>
-            </select>
-            {filterType && (
-              <div className="search-bar">
-                <Search size={18} />
-                <input
-                  type="text"
-                  placeholder={filterType === 'statut' ? 'EN_ATTENTE, CONFIRME, ...' : `Nom du ${filterType === 'patient' ? 'patient' : 'médecin'}...`}
-                  value={filterValue}
-                  onChange={(e) => setFilterValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      setPage(0);
-                      fetchRdvs(0, filterType, filterValue);
-                    }
-                  }}
-                />
-              </div>
-            )}
+    <PageTransition>
+      <div>
+        <div className="page-header">
+          <div className="page-header-group">
+            <h1 className="page-title">Rendez-vous</h1>
+            <p className="page-subtitle">Gestion des rendez-vous</p>
           </div>
-          <button className="btn btn-primary" onClick={openCreate}><Plus size={16} /> Ajouter Rendez-vous</button>
+          <button className="btn btn-primary" onClick={(e) => { createRipple(e); openCreate(); }}>
+            <Plus size={16} /> Ajouter Rendez-vous
+          </button>
         </div>
-        {rdvs.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-icon"><CalendarDays size={48} /></div>
-            <div className="empty-state-text">Aucun rendez-vous trouvé</div>
+        <div className="card card-hoverable">
+          <div className="card-header">
+            <div className="flex gap-2" style={{ flex: 1, flexWrap: 'wrap' }}>
+              <div className="search-bar" style={{ minWidth: 160 }}>
+                <Filter size={16} />
+                <select className="form-select" value={filterType} onChange={(e) => handleFilter(e.target.value)} style={{ border: 'none', background: 'none', padding: '4px 28px 4px 0' }}>
+                  <option value="">Tous les rendez-vous</option>
+                  <option value="statut">Par statut</option>
+                  <option value="patient">Par patient</option>
+                  <option value="medecin">Par médecin</option>
+                </select>
+              </div>
+              {filterType && (
+                <div className="search-bar">
+                  <Search size={16} />
+                  <input
+                    type="text"
+                    placeholder={filterType === 'statut' ? 'EN_ATTENTE, CONFIRME...' : `Nom du ${filterType === 'patient' ? 'patient' : 'médecin'}...`}
+                    value={filterValue}
+                    onChange={(e) => setFilterValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        setPage(0);
+                        fetchRdvs(0, filterType, filterValue);
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Patient</th>
-                  <th>Médecin</th>
-                  <th>Date</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rdvs.map((rdv) => (
-                  <tr key={rdv.id}>
-                    <td>{rdv.patient?.nom} {rdv.patient?.prenom}</td>
-                    <td>Dr. {rdv.medecin?.nom}</td>
-                    <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR')}</td>
-                    <td><Badge status={rdv.statut} /></td>
-                    <td>
-                      <div className="flex gap-2">
-                        <button className="btn btn-ghost btn-sm" onClick={() => openEdit(rdv)} title="Modifier"><Pencil size={14} /></button>
-                        {rdv.statut !== 'ANNULE' && (
-                          <button className="btn btn-danger btn-sm" onClick={() => handleCancel(rdv.id)} title="Annuler"><XCircle size={14} /></button>
-                        )}
-                        <button className="btn btn-secondary btn-sm" onClick={() => handleDownload(rdv.patient?.id)} title="Télécharger PDF"><Download size={14} /></button>
-                      </div>
-                    </td>
+          {rdvs.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon large">
+                <CalendarDays size={40} />
+              </div>
+              <div className="empty-state-text">Aucun rendez-vous trouvé</div>
+              <div className="empty-state-sub">Créez un nouveau rendez-vous pour commencer</div>
+              <button className="btn btn-primary" onClick={(e) => { createRipple(e); openCreate(); }}>
+                <Plus size={16} /> Ajouter Rendez-vous
+              </button>
+            </div>
+          ) : (
+            <div className="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Patient</th>
+                    <th>Médecin</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th style={{ width: 150 }}>Actions</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {rdvs.map((rdv) => (
+                    <tr key={rdv.id}>
+                      <td>{rdv.patient?.nom} {rdv.patient?.prenom}</td>
+                      <td>Dr. {rdv.medecin?.nom}</td>
+                      <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                      <td><Badge status={rdv.statut} /></td>
+                      <td>
+                        <div className="td-actions">
+                          <button className="btn btn-ghost btn-icon btn-sm" onClick={(e) => { createRipple(e); openEdit(rdv); }} title="Modifier">
+                            <Pencil size={14} />
+                          </button>
+                          {rdv.statut !== 'ANNULE' && (
+                            <button className="btn btn-danger btn-icon btn-sm" onClick={(e) => { createRipple(e); handleCancel(rdv.id); }} title="Annuler">
+                              <XCircle size={14} />
+                            </button>
+                          )}
+                          <button className="btn btn-ghost btn-icon btn-sm" onClick={(e) => { createRipple(e); handleDownload(rdv.patient?.id); }} title="Télécharger PDF">
+                            <Download size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
+        </div>
+        <Modal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          title={editingRdv ? 'Modifier Rendez-vous' : 'Ajouter Rendez-vous'}
+          footer={
+            <div className="flex gap-2">
+              <button className="btn btn-secondary" onClick={(e) => { createRipple(e); setModalOpen(false); }}>Annuler</button>
+              <button className="btn btn-primary" form="rdv-form">Enregistrer</button>
+            </div>
+          }
+        >
+          <form id="rdv-form" onSubmit={handleSubmit} style={{ padding: '0.5rem 0' }}>
+            <div className="form-group">
+              <label className="form-label">Patient</label>
+              <select className="form-select" value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} required>
+                <option value="">Sélectionner un patient</option>
+                {patients.map((p) => (
+                  <option key={p.id} value={p.id}>{p.nom} {p.prenom}</option>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Médecin</label>
+              <select className="form-select" value={form.medecin} onChange={(e) => setForm({ ...form, medecin: e.target.value })} required>
+                <option value="">Sélectionner un médecin</option>
+                {medecins.map((m) => (
+                  <option key={m.id} value={m.id}>{m.nom} — {m.specialite}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Date</label>
+              <input className="form-input" type="datetime-local" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Statut</label>
+              <select className="form-select" value={form.statut} onChange={(e) => setForm({ ...form, statut: e.target.value })} required>
+                <option value="EN_ATTENTE">En attente</option>
+                <option value="CONFIRME">Confirmé</option>
+                <option value="ANNULE">Annulé</option>
+                <option value="TERMINE">Terminé</option>
+              </select>
+            </div>
+          </form>
+        </Modal>
       </div>
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editingRdv ? 'Modifier Rendez-vous' : 'Ajouter Rendez-vous'}
-        footer={
-          <div className="flex gap-2">
-            <button className="btn btn-secondary" onClick={() => setModalOpen(false)}>Annuler</button>
-            <button className="btn btn-primary" form="rdv-form">Enregistrer</button>
-          </div>
-        }
-      >
-        <form id="rdv-form" onSubmit={handleSubmit} style={{ padding: '1rem' }}>
-          <div className="form-group">
-            <label className="form-label">Patient</label>
-            <select className="form-select" value={form.patient} onChange={(e) => setForm({ ...form, patient: e.target.value })} required>
-              <option value="">Sélectionner un patient</option>
-              {patients.map((p) => (
-                <option key={p.id} value={p.id}>{p.nom} {p.prenom}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="form-label">Médecin</label>
-            <select className="form-select" value={form.medecin} onChange={(e) => setForm({ ...form, medecin: e.target.value })} required>
-              <option value="">Sélectionner un médecin</option>
-              {medecins.map((m) => (
-                <option key={m.id} value={m.id}>{m.nom} — {m.specialite}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="form-label">Date</label>
-            <input className="form-input" type="datetime-local" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} required />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Statut</label>
-            <select className="form-select" value={form.statut} onChange={(e) => setForm({ ...form, statut: e.target.value })} required>
-              <option value="EN_ATTENTE">En attente</option>
-              <option value="CONFIRME">Confirmé</option>
-              <option value="ANNULE">Annulé</option>
-              <option value="TERMINE">Terminé</option>
-            </select>
-          </div>
-        </form>
-      </Modal>
-    </div>
+    </PageTransition>
   );
 }

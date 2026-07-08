@@ -4,7 +4,9 @@ export default function Pagination({ page, totalPages, onChange }) {
   if (totalPages <= 1) return null;
   return (
     <div className="pagination">
-      <span className="pagination-info">Page {page + 1} sur {totalPages}</span>
+      <span className="pagination-info">
+        Page <strong>{page + 1}</strong> sur {totalPages}
+      </span>
       <div className="pagination-controls">
         <button className="page-btn" disabled={page === 0} onClick={() => onChange(page - 1)}>
           <ChevronLeft size={14} />

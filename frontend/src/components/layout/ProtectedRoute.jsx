@@ -6,8 +6,8 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   if (loading) return (
     <div className="loading-container" style={{ height: '100vh' }}>
-      <div className="spinner" />
-      <span>Chargement...</span>
+      <div className="spinner spinner-lg" />
+      <p>Vérification de l'authentification...</p>
     </div>
   );
 

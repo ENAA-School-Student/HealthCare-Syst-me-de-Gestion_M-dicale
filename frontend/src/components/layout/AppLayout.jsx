@@ -1,5 +1,7 @@
+import { useState, useCallback } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import { Menu } from 'lucide-react';
 
 const TITLES = {
   '/admin/dashboard':   { title: 'Dashboard',        sub: 'Vue globale du système' },
@@ -19,13 +21,51 @@ const TITLES = {
 
 export default function AppLayout() {
   const { pathname } = useLocation();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const info = TITLES[pathname] || { title: 'HealthCare+', sub: '' };
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prev => !prev);
+  }, []);
+
+  const toggleMobile = useCallback(() => {
+    setMobileOpen(prev => !prev);
+  }, []);
+
+  const closeMobile = useCallback(() => {
+    setMobileOpen(false);
+  }, []);
 
   return (
     <div className="app-layout">
-      <Sidebar />
-      <div className="main-content">
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 99,
+            background: 'rgba(0,0,0,0.5)',
+          }}
+          onClick={closeMobile}
+        />
+      )}
+
+      <Sidebar
+        collapsed={sidebarCollapsed}
+        onToggle={toggleSidebar}
+        mobileOpen={mobileOpen}
+        onMobileClose={closeMobile}
+      />
+
+      <div className={`main-content ${sidebarCollapsed ? 'expanded' : ''}`}>
         <header className="header">
+          <button
+            className="btn btn-ghost btn-sm mobile-menu-btn"
+            onClick={toggleMobile}
+            style={{ display: 'none', padding: 8 }}
+          >
+            <Menu size={20} />
+          </button>
           <div className="header-title">
             {info.title}
             {info.sub && <span>{info.sub}</span>}

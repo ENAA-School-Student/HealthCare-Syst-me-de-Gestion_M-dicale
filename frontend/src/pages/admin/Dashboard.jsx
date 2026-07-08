@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { Users, Stethoscope, CalendarDays, FolderOpen } from 'lucide-react';
 import StatCard from '../../components/common/StatCard';
 import Badge from '../../components/common/Badge';
+import PageTransition from '../../components/common/PageTransition';
 import { getAllPatients } from '../../api/patientApi';
 import { getAllMedecins } from '../../api/medecinApi';
 import { getAllRendezVous } from '../../api/rendezVousApi';
 import { getAllDossiers } from '../../api/dossierApi';
+import { createRipple } from '../../utils/ripple';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {
@@ -38,53 +40,69 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  if (loading) return <div className="loading-container"><div className="spinner" /></div>;
+  if (loading) return (
+    <div className="loading-container">
+      <div className="spinner spinner-lg" />
+      <p>Chargement du tableau de bord...</p>
+    </div>
+  );
 
   return (
-    <div>
-      <div className="page-header">
-        <h1 className="page-title">Tableau de bord</h1>
-        <p className="page-subtitle">Aperçu général du système</p>
-      </div>
-      <div className="stat-grid">
-        <StatCard label="Total Patients" value={stats.patients} icon={<Users size={24} />} />
-        <StatCard label="Total Médecins" value={stats.medecins} icon={<Stethoscope size={24} />} />
-        <StatCard label="Total Rendez-vous" value={stats.rendezVous} icon={<CalendarDays size={24} />} />
-        <StatCard label="Total Dossiers" value={stats.dossiers} icon={<FolderOpen size={24} />} />
-      </div>
-      <div className="card mt-4">
-        <div className="card-header">
-          <h3 className="card-title">Rendez-vous récents</h3>
+    <PageTransition>
+      <div>
+        <div className="page-header">
+          <div className="page-header-group">
+            <h1 className="page-title">Tableau de bord</h1>
+            <p className="page-subtitle">Aperçu général du système</p>
+          </div>
         </div>
-        {recentRdvs.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-state-text">Aucun rendez-vous récent</div>
+        <div className="stat-grid">
+          <StatCard label="Total Patients" value={stats.patients} icon={<Users size={24} />} />
+          <StatCard label="Total Médecins" value={stats.medecins} icon={<Stethoscope size={24} />} />
+          <StatCard label="Total Rendez-vous" value={stats.rendezVous} icon={<CalendarDays size={24} />} />
+          <StatCard label="Total Dossiers" value={stats.dossiers} icon={<FolderOpen size={24} />} />
+        </div>
+        <div className="card card-hoverable mt-4">
+          <div className="card-header">
+            <h3 className="card-title">
+              <CalendarDays size={16} style={{ color: 'var(--primary)' }} />
+              Rendez-vous récents
+            </h3>
           </div>
-        ) : (
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Patient</th>
-                  <th>Médecin</th>
-                  <th>Date</th>
-                  <th>Statut</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentRdvs.map((rdv) => (
-                  <tr key={rdv.id}>
-                    <td>{rdv.patientNom} {rdv.patientPrenom}</td>
-                    <td>Dr. {rdv.medecinNom}</td>
-                    <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR')}</td>
-                    <td><Badge status={rdv.statut} /></td>
+          {recentRdvs.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon">
+                <CalendarDays size={32} />
+              </div>
+              <div className="empty-state-text">Aucun rendez-vous récent</div>
+              <div className="empty-state-sub">Les rendez-vous apparaîtront ici une fois créés</div>
+            </div>
+          ) : (
+            <div className="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Patient</th>
+                    <th>Médecin</th>
+                    <th>Date</th>
+                    <th>Statut</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {recentRdvs.map((rdv) => (
+                    <tr key={rdv.id}>
+                      <td>{rdv.patientNom} {rdv.patientPrenom}</td>
+                      <td>Dr. {rdv.medecinNom}</td>
+                      <td>{new Date(rdv.dateRendezVous).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</td>
+                      <td><Badge status={rdv.statut} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

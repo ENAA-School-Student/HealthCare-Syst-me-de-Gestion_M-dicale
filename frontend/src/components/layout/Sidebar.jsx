@@ -2,7 +2,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, Users, UserRound, CalendarDays,
-  FolderOpen, LogOut, Stethoscope, HeartPulse
+  FolderOpen, LogOut, Stethoscope, HeartPulse,
+  ChevronLeft, Menu
 } from 'lucide-react';
 
 const NAV = {
@@ -29,7 +30,7 @@ const NAV = {
 
 const ROLE_LABEL = { ADMIN: 'Administrateur', MEDECIN: 'Médecin', PATIENT: 'Patient' };
 
-export default function Sidebar() {
+export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const items = NAV[user?.role] || [];
@@ -37,7 +38,22 @@ export default function Sidebar() {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
+      <button className="sidebar-toggle" onClick={onToggle} title={collapsed ? 'Développer' : 'Réduire'}>
+        <ChevronLeft size={14} />
+      </button>
+
+      {mobileOpen && (
+        <button
+          className="sidebar-toggle"
+          onClick={onMobileClose}
+          style={{ right: 14, top: 16, transform: 'none', zIndex: 20 }}
+          title="Fermer"
+        >
+          <Menu size={14} />
+        </button>
+      )}
+
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon"><HeartPulse size={20} color="white" /></div>
         <div className="sidebar-logo-text">Health<span>Care+</span></div>
@@ -46,9 +62,15 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         <div className="nav-section-label">Navigation</div>
         {items.map(({ label, path, icon: Icon }) => (
-          <NavLink key={path} to={path} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink
+            key={path}
+            to={path}
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            data-label={label}
+            onClick={onMobileClose}
+          >
             <Icon size={16} />
-            {label}
+            <span>{label}</span>
           </NavLink>
         ))}
       </nav>
