@@ -49,30 +49,30 @@ export default function Register() {
             </div>
             <h1>Health<span>Care+</span></h1>
             <p>Rejoignez la plateforme de gestion médicale intelligente.</p>
-            <div className="auth-brand-features">
-              <div className="auth-brand-feature">
-                <div className="auth-brand-feature-icon">
+                            <div className="auth-features">
+              <div className="auth-feature">
+                <div className="auth-feature-icon">
                   <Shield size={18} />
                 </div>
-                <div className="auth-brand-feature-text">
+                <div className="auth-feature-text">
                   <strong>Gestion sécurisée</strong>
                   <span>Données médicales protégées et conformes aux normes</span>
                 </div>
               </div>
-              <div className="auth-brand-feature">
-                <div className="auth-brand-feature-icon">
+              <div className="auth-feature">
+                <div className="auth-feature-icon">
                   <CalendarCheck size={18} />
                 </div>
-                <div className="auth-brand-feature-text">
+                <div className="auth-feature-text">
                   <strong>Rendez-vous simplifiés</strong>
                   <span>Planification et suivi en temps réel</span>
                 </div>
               </div>
-              <div className="auth-brand-feature">
-                <div className="auth-brand-feature-icon">
+              <div className="auth-feature">
+                <div className="auth-feature-icon">
                   <Stethoscope size={18} />
                 </div>
-                <div className="auth-brand-feature-text">
+                <div className="auth-feature-text">
                   <strong>Dossiers médicaux</strong>
                   <span>Accès rapide à l'historique complet des patients</span>
                 </div>

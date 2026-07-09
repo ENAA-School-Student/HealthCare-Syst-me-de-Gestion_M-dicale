@@ -50,6 +50,12 @@ export default function Dashboard() {
   return (
     <PageTransition>
       <div>
+        <div className="page-header">
+          <div className="page-header-group">
+            <h1 className="page-title">Mon Dashboard</h1>
+            <p className="page-subtitle">Bienvenue sur votre espace personnel</p>
+          </div>
+        </div>
         <div className="stat-grid">
           {statCards.map((s, i) => <StatCard key={i} {...s} />)}
         </div>

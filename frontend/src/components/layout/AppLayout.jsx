@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { Menu } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 
 const TITLES = {
   '/admin/dashboard':   { title: 'Dashboard',        sub: 'Vue globale du système' },
@@ -69,6 +69,10 @@ export default function AppLayout() {
           <div className="header-title">
             {info.title}
             {info.sub && <span>{info.sub}</span>}
+          </div>
+          <div className="search-bar" style={{ marginLeft: 'auto', minWidth: 220 }}>
+            <Search size={16} />
+            <input type="text" placeholder="Rechercher..." />
           </div>
         </header>
         <main className="page-body">

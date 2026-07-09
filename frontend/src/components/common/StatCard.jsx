@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 function AnimatedValue({ value }) {
   const [display, setDisplay] = useState(0);
-  const ref = useRef(null);
   const num = typeof value === 'number' ? value : 0;
 
   useEffect(() => {
@@ -29,17 +29,27 @@ function AnimatedValue({ value }) {
   return <>{display}</>;
 }
 
-export default function StatCard({ label, value, icon, color = 'var(--accent)', bg = 'var(--accent-soft)' }) {
+export default function StatCard({ label, value, icon, color = 'var(--primary)', bg = 'var(--primary-soft)', change, changeLabel }) {
+  const changeDir = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+  const ChangeIcon = change > 0 ? TrendingUp : change < 0 ? TrendingDown : Minus;
+
   return (
     <div className="stat-card">
       <div className="stat-icon" style={{ background: bg, color }}>
+        <div className="stat-icon-ring" style={{ color }} />
         {icon}
       </div>
-      <div>
+      <div style={{ flex: 1 }}>
         <div className="stat-value">
           <AnimatedValue value={value} />
         </div>
         <div className="stat-label">{label}</div>
+        {change !== undefined && (
+          <div className={`stat-change ${changeDir}`}>
+            <ChangeIcon size={11} strokeWidth={2.5} />
+            {change > 0 ? '+' : ''}{change}{changeLabel ? ` ${changeLabel}` : ''}
+          </div>
+        )}
       </div>
     </div>
   );

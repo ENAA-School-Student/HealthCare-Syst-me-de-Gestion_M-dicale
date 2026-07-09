@@ -59,7 +59,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
         <div className="sidebar-logo-text">Health<span>Care+</span></div>
       </div>
 
-      <nav className="sidebar-nav">
+      <div className="nav-scroll">
         <div className="nav-section-label">Navigation</div>
         {items.map(({ label, path, icon: Icon }) => (
           <NavLink
@@ -73,10 +73,10 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose
             <span>{label}</span>
           </NavLink>
         ))}
-      </nav>
+      </div>
 
       <div className="sidebar-footer">
-        <div className="user-info">
+        <div className="sidebar-user">
           <div className="user-avatar">{user?.email?.[0]?.toUpperCase() || 'U'}</div>
           <div>
             <div className="user-name">{user?.email?.split('@')[0]}</div>

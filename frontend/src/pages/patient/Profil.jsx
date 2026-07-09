@@ -74,6 +74,12 @@ export default function Profil() {
   return (
     <PageTransition>
       <div>
+        <div className="page-header">
+          <div className="page-header-group">
+            <h1 className="page-title">Mon Profil</h1>
+            <p className="page-subtitle">Mes informations personnelles</p>
+          </div>
+        </div>
         <div className="card card-hoverable" style={{ maxWidth: 640 }}>
           <div className="profile-header">
             <div className="profile-avatar">

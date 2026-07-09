@@ -66,16 +66,22 @@ export default function Dossier() {
   return (
     <PageTransition>
       <div>
+        <div className="page-header">
+          <div className="page-header-group">
+            <h1 className="page-title">Mon Dossier Médical</h1>
+            <p className="page-subtitle">Consultez vos données de santé</p>
+          </div>
+          <button className="btn btn-primary" onClick={(e) => { createRipple(e); handleDownload(); }} disabled={downloading}>
+            <Download size={16} />
+            {downloading ? 'Téléchargement...' : 'Télécharger PDF'}
+          </button>
+        </div>
         <div className="card card-hoverable">
           <div className="card-header">
             <h3 className="card-title">
               <FileText size={16} style={{ color: 'var(--primary)' }} />
               Mon Dossier Médical
             </h3>
-            <button className="btn btn-primary btn-sm" onClick={(e) => { createRipple(e); handleDownload(); }} disabled={downloading}>
-              <Download size={14} />
-              {downloading ? 'Téléchargement...' : 'Télécharger PDF'}
-            </button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '8px 0' }}>
             <div className="form-group" style={{ marginBottom: 0 }}>
