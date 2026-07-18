@@ -30,7 +30,11 @@ public class Medecin {
     public Medecin() {
     }
 
-    @OneToMany(mappedBy = "medecin")
+    @OneToMany(
+            mappedBy = "medecin",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JsonIgnore
     private List<RendezVous> rendezVous;
 
