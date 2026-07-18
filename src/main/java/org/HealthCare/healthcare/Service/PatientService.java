@@ -1,5 +1,6 @@
 package org.HealthCare.healthcare.Service;
 
+import jakarta.transaction.Transactional;
 import org.HealthCare.healthcare.DTO.patient.PutPatientDTO;
 import org.HealthCare.healthcare.DTO.patient.RequestPatientDTO;
 import org.HealthCare.healthcare.DTO.patient.ResponsePatientDTO;
@@ -7,6 +8,7 @@ import org.HealthCare.healthcare.Entity.Patient;
 import org.HealthCare.healthcare.Entity.User;
 import org.HealthCare.healthcare.Mapper.PatientMapper;
 import org.HealthCare.healthcare.Repository.PatientRepository;
+import org.HealthCare.healthcare.Repository.RendezVousRepository;
 import org.HealthCare.healthcare.Repository.UserRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,12 +24,14 @@ public class PatientService {
     private PatientMapper patientMapper;
     private PdfGeneratorService pdfGeneratorService;
     private UserRepository userRepository;
+    private final RendezVousRepository rendezVousRepository;
 
-    public PatientService(PatientRepository patientRepository , PatientMapper patientMapper, PdfGeneratorService pdfGeneratorService, UserRepository userRepository){
+    public PatientService(PatientRepository patientRepository , PatientMapper patientMapper, PdfGeneratorService pdfGeneratorService, UserRepository userRepository, RendezVousRepository rendezVousRepository){
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
         this.pdfGeneratorService = pdfGeneratorService;
         this.userRepository = userRepository;
+        this.rendezVousRepository = rendezVousRepository;
     }
 
     public byte[] generatePatientReport(Long id) {
@@ -56,15 +60,16 @@ public class PatientService {
         return patientMapper.toResponseDTO(patient);
     }
 
+    @Transactional
     @CacheEvict(value = "patients", allEntries = true)
     public void deletePatient(Long id){
+
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Patient introuvable"));
-        User user = patient.getUser();
-        patientRepository.deleteById(id);
-        if (user != null) {
-            userRepository.deleteById(user.getId());
-        }
+
+        rendezVousRepository.deleteByPatientId(id);
+
+        patientRepository.delete(patient);
     }
 
     @Cacheable(value = "patients", key = "'all-' + #pageable.pageNumber")
