@@ -41,20 +41,20 @@ public class DossierMedicalController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('MEDECIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MEDECIN')")
     public ResponseEntity<ResponseDossierMedicalDTO> createDossierMedical(@Valid @RequestBody RequestDossierMedicalDTO dto){
         ResponseDossierMedicalDTO responseDossierMedicalDTO = dossierMedicalService.createDossierMedical(dto);
         return new ResponseEntity<>(responseDossierMedicalDTO , HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}/diagnostic")
-    @PreAuthorize("hasRole('MEDECIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MEDECIN')")
     public ResponseEntity<ResponseDossierMedicalDTO> addDiagnostic(@PathVariable Long id , @Valid @RequestBody AddDiagnosticDTO dto){
         return ResponseEntity.ok(dossierMedicalService.addDiagnostic(id , dto));
     }
 
     @PutMapping("/{id}/observation")
-    @PreAuthorize("hasRole('MEDECIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MEDECIN')")
     public ResponseEntity<ResponseDossierMedicalDTO> addObservation(@PathVariable Long id , @Valid @RequestBody AddObservationDTO dto){
         return ResponseEntity.ok(dossierMedicalService.addObservation(id, dto));
     }
@@ -66,7 +66,7 @@ public class DossierMedicalController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('PATIENT')")
+    @PreAuthorize("hasAnyRole('PATIENT', 'ADMIN')")
     public ResponseEntity<ResponseDossierMedicalDTO> getMyDossier(@AuthenticationPrincipal User user) {
         if (user.getPatient() != null) {
             return ResponseEntity.ok(dossierMedicalService.getDossierByPatientId(user.getPatient().getId()));
