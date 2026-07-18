@@ -110,4 +110,11 @@ public class RendezVousController {
         return ResponseEntity.ok(rendezVousService.afficherRdvParStatut(statut, pageable));
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','MEDECIN')")
+    public ResponseEntity<Void> deleteRendezVous(@PathVariable Long id){
+        rendezVousService.deleteRendezVous(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

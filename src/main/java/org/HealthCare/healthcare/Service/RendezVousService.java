@@ -121,4 +121,13 @@ public class RendezVousService {
         Page<RendezVous> rendezVous = rendezVousRepository.findByMedecin_Id(id, pageable);
         return rendezVous.map(rendezVousMapper::toResponseDTO);
     }
+
+    @CacheEvict(value = "rendezvous", allEntries = true)
+    public void deleteRendezVous(Long id){
+
+        RendezVous rendezVous = rendezVousRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rendez-vous introuvable"));
+
+        rendezVousRepository.delete(rendezVous);
+    }
 }
