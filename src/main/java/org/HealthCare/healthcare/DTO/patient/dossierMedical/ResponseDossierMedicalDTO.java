@@ -22,5 +22,4 @@ public class ResponseDossierMedicalDTO {
     private String patientNom;
 
     private String patientPrenom;
-
 }
