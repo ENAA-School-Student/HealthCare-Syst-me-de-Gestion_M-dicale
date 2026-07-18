@@ -8,9 +8,14 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface DossierMedicalMapper {
-    @Mapping(target = "id" , ignore = true)
-    @Mapping(target = "patient" , ignore = true)
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "patient", ignore = true)
     DossierMedical toEntity(RequestDossierMedicalDTO dto);
-    @Mapping(source = "patient.id" , target = "patientId")
+
+    @Mapping(source = "patient.id", target = "patientId")
+    @Mapping(source = "patient.nom", target = "patientNom")
+    @Mapping(source = "patient.prenom", target = "patientPrenom")
     ResponseDossierMedicalDTO toResponse(DossierMedical dossierMedical);
+
 }
