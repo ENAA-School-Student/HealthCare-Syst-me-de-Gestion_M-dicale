@@ -87,4 +87,13 @@ public class DossierMedicalService {
                 .orElseThrow(() -> new RuntimeException("Dossier medical introuvable"));
         return dossierMedicalMapper.toResponse(dossier);
     }
+
+    @CacheEvict(value = "dossiers", allEntries = true)
+    public void deleteDossier(Long id){
+
+        DossierMedical dossier = dossierMedicalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dossier introuvable"));
+
+        dossierMedicalRepository.delete(dossier);
+    }
 }

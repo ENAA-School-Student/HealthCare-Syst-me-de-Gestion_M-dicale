@@ -79,4 +79,11 @@ public class DossierMedicalController {
     public ResponseEntity<Page<ResponseDossierMedicalDTO>> getAllDossierMedical(@PageableDefault(sort = "dateCreation", direction = Sort.Direction.DESC) Pageable pageable){
         return ResponseEntity.ok(dossierMedicalService.getAllDossierMedical(pageable));
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MEDECIN')")
+    public ResponseEntity<Void> deleteDossier(@PathVariable Long id){
+        dossierMedicalService.deleteDossier(id);
+        return ResponseEntity.noContent().build();
+    }
 }
