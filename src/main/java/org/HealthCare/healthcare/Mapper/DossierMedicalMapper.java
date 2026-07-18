@@ -17,5 +17,4 @@ public interface DossierMedicalMapper {
     @Mapping(source = "patient.nom", target = "patientNom")
     @Mapping(source = "patient.prenom", target = "patientPrenom")
     ResponseDossierMedicalDTO toResponse(DossierMedical dossierMedical);
-
 }
