@@ -73,7 +73,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000",
-                "http://localhost:8080", // أضف هذا
+                "http://localhost:8080",
                 "https://healthcare-syst-me-de-gestionm-dicale-production.up.railway.app"
         ));
 
